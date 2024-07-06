@@ -117,7 +117,7 @@ void tft_draw_line(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint32_t colo
 
 void tft_draw_wide_line(float ax, float ay, float bx, float by, float wd, uint32_t fg_color, uint32_t bg_color)
 {
-    auto d = std::sqrtf((bx - ax)*(bx - ax) + (by - ay)*(by - ay));
+    auto d = sqrtf((bx - ax)*(bx - ax) + (by - ay)*(by - ay));
     auto y_shift = wd * (bx - ax) / (d * 2.0f);
     auto x_shift = - wd * (by - ay) / (d * 2.0f);
 
