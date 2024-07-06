@@ -4,7 +4,9 @@
 
 #include <chrono>
 #include <iostream>
+
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 SDL_Renderer* _sdl;
 
@@ -45,11 +47,21 @@ bool ReadInput(int pin)
 
 int main()
 {
-    SDL_Init(SDL_INIT_VIDEO);
-	SDL_Event event;
+    auto init_sdl = SDL_Init(SDL_INIT_VIDEO);
+	auto init_tff = TTF_Init();
+
+	if (init_sdl == -1) {
+		fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
+		return 1;
+	}
+
+	if (init_tff == -1) {
+		fprintf(stderr, "Unable to initialize SDL_TTF: %s\n", TTF_GetError());
+		return 1;
+	}
 
     auto window = SDL_CreateWindow(
-		"SDL Maps Renderer",
+		"SDL Maps",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		SCREEN_WIDTH, 
@@ -78,13 +90,14 @@ int main()
 	// auto time = end_time - start_time;
 
     //std::cout << time / std::chrono::milliseconds(1) << "ms to run.\n";
+	SDL_Event event;
 
 	do {
-		Loop();
+		//Loop();
 
 		SDL_Delay(10);
 		SDL_PollEvent(&event);
-		SDL_RenderPresent(_sdl);
+		//SDL_RenderPresent(_sdl);
 	} 
 	while (event.type != SDL_QUIT);
 

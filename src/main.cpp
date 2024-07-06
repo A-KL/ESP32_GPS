@@ -55,7 +55,6 @@ void Setup()
     tft_msg("Waiting for satellites...");
 }
 
-
 void Loop()
 {
     Point32 p = viewPort.center;

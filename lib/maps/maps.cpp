@@ -52,7 +52,7 @@ void parse_str_until(IReadStream& file, char terminator, char *str)
     i=0;
     c = (char )file.read();  
     while( c != terminator && c != '\n'){
-        assert( i < 29);
+        assert(i < 29);
         str[i++] = c;
         c = (char )file.read();
     }

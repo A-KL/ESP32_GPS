@@ -8,6 +8,7 @@
 
 #include <logs.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 extern SDL_Renderer* _sdl;
 
@@ -51,6 +52,27 @@ inline int SDL_SetRenderDrawColor(SDL_Renderer* render, uint16_t color565)
         0); //SDL_ALPHA_OPAQUE
 }
 
+void SDL_RenderText(int32_t x0, int32_t y0, const char* msg, uint16_t color565)
+{
+    SDL_Rect rect { 0, 0, SCREEN_WIDTH, 25 };
+    SDL_Color White = {255, 255, 255};
+
+    TTF_Font* font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", 20);
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, msg, White);
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(_sdl, textSurface);
+
+    SDL_Rect textRect { x0, y0, 0, 0 };
+
+    SDL_SetRenderDrawColor(_sdl, color565);
+    SDL_RenderFillRect(_sdl, &rect);
+
+    SDL_RenderCopy(_sdl, textTexture, NULL, &textRect);
+
+    SDL_DestroyTexture(textTexture);
+    SDL_FreeSurface(textSurface);
+    TTF_CloseFont(font);
+}
+
 void tft_init()
 { }
 
@@ -61,34 +83,20 @@ void tft_println(const char* text)
 
 void tft_msg(const char* msg)
 {
-// TODO
+    SDL_RenderText(5, 5, msg, CYAN);
 }
 
 void tft_header(const Coord& pos, const int mode)
 {
-    SDL_Rect rect { 0, 0, SCREEN_WIDTH, 25 };
+    char text[50];
+    snprintf(text, 50, "%f %f  Sats: %d M: %d", pos.lng, pos.lat, pos.satellites, mode);
 
-    SDL_SetRenderDrawColor(_sdl, YELLOWCLEAR);
-    SDL_RenderFillRect(_sdl, &rect);
-
-    // tft.fillRect(0, 0, 240, 25, YELLOWCLEAR);
-    // tft.setCursor(5,5,2);
-    // tft.print(pos.lng, 4);
-    // tft.print(" "); tft.print(pos.lat, 4);
-    // tft.print(" Sats: "); tft.print(pos.satellites);
-    // tft.print(" M: "); tft.print(mode);
+    SDL_RenderText(5, 5, text, YELLOWCLEAR);
 }
 
 void tft_header_msg(const char* msg)
 {
-    SDL_Rect rect { 0, 0, SCREEN_WIDTH, 25 };
-
-    SDL_SetRenderDrawColor(_sdl, YELLOWCLEAR);
-    SDL_RenderFillRect(_sdl, &rect);
-
-    // tft.fillRect(0, 0, 240, 25, YELLOWCLEAR);
-    // tft.setCursor(5,5,2);
-    // tft.print(msg);
+    SDL_RenderText(5, 5, msg, YELLOWCLEAR);
 }
 
 void tft_footer_msg(const char* msg)
@@ -136,9 +144,9 @@ void tft_draw_wide_line(float ax, float ay, float bx, float by, float wd, uint32
         { SDL_FPoint{ bx - x_shift, by - y_shift }, sdl_color, SDL_FPoint{ 0 }, },
     };
 
-    int indexs[] = { 0,1,2, 0,2,3 };
+    int indexes[] = { 0,1,2, 0,2,3 };
 
-    auto res = SDL_RenderGeometry(_sdl, nullptr, verts.data(), verts.size(), indexs, sizeof(indexs)/sizeof(int));
+    auto res = SDL_RenderGeometry(_sdl, nullptr, verts.data(), verts.size(), indexes, sizeof(indexes)/sizeof(int));
 }
 
 void tft_fill_triangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color565)
