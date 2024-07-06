@@ -1,8 +1,10 @@
 #include <math.h>
 #include <stdint.h>
 //#include <geometry.h>
-#include "gps.h"
+
 #include "../conf.h"
+
+#include "gps.h"
 
 #ifdef ARDUINO
 
@@ -11,6 +13,14 @@
 
 TinyGPSPlus gps;
 HardwareSerial SerialGPS(1);
+
+void gpsInit()
+{
+    #ifdef ARDUINO_uPesy_WROVER
+    #else   
+        SerialGPS.begin(9600, SERIAL_8N1, GPS_TX, GPS_RX);
+    #endif
+}
 
 /// @brief Get the current position from the GPS chip
 /// @param serialGPS handler
@@ -38,14 +48,6 @@ void getPosition(HardwareSerial& serialGPS, Coord& coord)
     }
 }
 
-void gpsInit()
-{
-    #ifdef ARDUINO_uPesy_WROVER
-    #else   
-        SerialGPS.begin(9600, SERIAL_8N1, GPS_TX, GPS_RX);
-    #endif
-}
-
 void gpsGetPosition(Coord& coord)
 {
     getPosition(SerialGPS, coord);
@@ -62,10 +64,37 @@ void gpsGetPosition(Coord& coord)
 
 #else
 
-#include <chrono>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <nmeaparse/nmea.h>
+
+using namespace std;
+using namespace nmea;
+
+NMEAParser parser;
+GPSService gps(parser);
+
+void gpsInit()
+{
+    parser.log = false;
+    std::cout << "Fix  Sats  Sig\t\tSpeed    Dir  Lat         , Lon           Accuracy" << std::endl;
+
+	// Handle any changes to the GPS Fix... This is called whenever it's updated.
+	gps.onUpdate += [&gps](){
+		cout << (gps.fix.locked() ? "[*] " : "[ ] ") << setw(2) << setfill(' ') << gps.fix.trackingSatellites << "/" << setw(2) << setfill(' ') << gps.fix.visibleSatellites << " ";
+		cout << fixed << setprecision(2) << setw(5) << setfill(' ') << gps.fix.almanac.averageSNR() << " dB   ";
+		cout << fixed << setprecision(2) << setw(6) << setfill(' ') << gps.fix.speed << " km/h [" << GPSFix::travelAngleToCompassDirection(gps.fix.travelAngle, true) << "]  ";
+		cout << fixed << setprecision(6) << gps.fix.latitude << "\xF8 " "N, " << gps.fix.longitude << "\xF8 " "E" << "  ";
+		cout << "+/- " << setprecision(1) << gps.fix.horizontalAccuracy() << "m  ";
+		cout << endl;
+	};
+}
 
 void gpsGetPosition(Coord& coord)
 {
+    
+
     coord.lat = 41.419769;
     coord.lng = 2.103490;
 
