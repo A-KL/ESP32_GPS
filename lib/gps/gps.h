@@ -2,6 +2,10 @@
 
 #include <geometry.h>
 
+#ifndef M_PI
+#define M_PI    3.14159265358979323846264338327950288   /**< pi */
+#endif
+
 #define DEG2RAD(a)   ((a) / (180 / M_PI))
 #define RAD2DEG(a)   ((a) * (180 / M_PI))
 #define EARTH_RADIUS 6378137

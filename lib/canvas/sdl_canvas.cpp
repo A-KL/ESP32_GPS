@@ -11,8 +11,6 @@
 
 extern SDL_Renderer* _sdl;
 
-
-
 #define RED(r)   (uint8_t)(round(r >> 11) / 31 * 255)
 #define GREEN(g) (uint8_t)(round((g >> 5) & 0b111111) / 31 * 255)
 #define BLUE(b)  (uint8_t)(round(b & 0b11111) / 31 * 255)
@@ -25,38 +23,33 @@ inline uint8_t color565_scale(uint16_t color)
 inline uint8_t color565_red(uint16_t color565)
 {
     auto red5 = color565 >> 11;
-    // auto green6 = (color565 >> 5) & 0b111111;
-    // auto blue5 = color565 & 0b11111;
-
     return color565_scale(red5);
 }
 
 inline uint8_t color565_green(uint16_t color565)
 {
-    auto red5 = color565 >> 11;
     auto green6 = (color565 >> 5) & 0b111111;
-    auto blue5 = color565 & 0b11111;
-
     return color565_scale(green6);
 }
 
-inline uint8_t color565_blue(uint16_t color565)
+ inline uint8_t color565_blue(uint16_t color565)
 {
-    // auto red5 = color565 >> 11;
-    // auto green6 = (color565 >> 5) & 0b111111;
     auto blue5 = color565 & 0b11111;
-
     return color565_scale(blue5);
 }
 
 inline int SDL_SetRenderDrawColor(SDL_Renderer* render, uint16_t color565)
 {
-    log_d("R: %d, G: %d, B: %d", color565_red(YELLOWCLEAR), color565_green(YELLOWCLEAR), color565_blue(YELLOWCLEAR));
+    //log_d("R: %d, G: %d, B: %d", color565_red(YELLOWCLEAR), color565_green(YELLOWCLEAR), color565_blue(YELLOWCLEAR));
+
     return SDL_SetRenderDrawColor(
         render, 
-        RED(color565),
-        GREEN(color565),
-        BLUE(color565),
+        // color565_red(color565),
+        // color565_green(color565),
+        // color565_blue(color565),
+         RED(color565),
+         GREEN(color565),
+         BLUE(color565),
         0); //SDL_ALPHA_OPAQUE
 }
 
@@ -70,7 +63,7 @@ void tft_println(const char* text)
 
 void tft_header(const Coord& pos, const int mode)
 {
-    SDL_Rect rect { 0, 0, 240, 25 };
+    SDL_Rect rect { 0, 0, TFT_WIDTH, 25 };
 
     SDL_SetRenderDrawColor(_sdl, YELLOWCLEAR);
     SDL_RenderFillRect(_sdl, &rect);
@@ -85,7 +78,7 @@ void tft_header(const Coord& pos, const int mode)
 
 void tft_header_msg(const char* msg)
 {
-    SDL_Rect rect { 0, 0, 240, 25 };
+    SDL_Rect rect { 0, 0, TFT_WIDTH, 25 };
 
     SDL_SetRenderDrawColor(_sdl, YELLOWCLEAR);
     SDL_RenderFillRect(_sdl, &rect);
@@ -97,7 +90,7 @@ void tft_header_msg(const char* msg)
 
 void tft_footer(const char* msg)
 {
-    SDL_Rect rect { 0, 300, 240, 320};
+    SDL_Rect rect { 0, 300, TFT_WIDTH, TFT_HEIGHT};
 
     SDL_SetRenderDrawColor(_sdl, CYAN);
     SDL_RenderFillRect(_sdl, &rect);
@@ -132,15 +125,18 @@ void tft_draw_wide_line(float ax, float ay, float bx, float by, float wd, uint32
     // TODO
 }
 
-void tft_fill_triangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color)
+void tft_fill_triangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color565)
 {
-    SDL_SetRenderDrawColor(_sdl, color);
+    //SDL_SetRenderDrawColor(_sdl, color565);
 
     const SDL_Color sdl_color 
     { 
-        RED(color),
-        GREEN(color),
-        BLUE(color),
+        // color565_red(color565),
+        // color565_green(color565),
+        // color565_blue(color565),
+        RED(color565),
+        GREEN(color565),
+        BLUE(color565)
      };
 
     const std::vector<SDL_Vertex> verts =
