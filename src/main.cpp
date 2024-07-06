@@ -47,10 +47,12 @@ void Setup()
 
     viewPort.setCenter(map_center);
 
-    auto result = get_map_blocks(fileSystem, viewPort.bbox, memCache);
-    while (!result);
+    // auto result = get_map_blocks(fileSystem, viewPort.bbox, memCache);
+    // while (!result);
 
-    draw(viewPort, memCache, zoom_level);
+   // draw(viewPort, memCache, zoom_level);
+
+    tft_draw_wide_line(0,0, 200, 200, 5, RED, RED);
 
     tft_msg("Waiting for satellites...");
 }

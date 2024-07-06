@@ -40,8 +40,6 @@ inline uint8_t color565_green(uint16_t color565)
 
 inline int SDL_SetRenderDrawColor(SDL_Renderer* render, uint16_t color565)
 {
-    //log_d("R: %d, G: %d, B: %d", color565_red(YELLOWCLEAR), color565_green(YELLOWCLEAR), color565_blue(YELLOWCLEAR));
-
     return SDL_SetRenderDrawColor(
         render, 
         // color565_red(color565),
@@ -120,23 +118,38 @@ void tft_draw_line(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint32_t colo
 
 void tft_draw_wide_line(float ax, float ay, float bx, float by, float wd, uint32_t fg_color, uint32_t bg_color)
 {
-    SDL_SetRenderDrawColor(_sdl, fg_color);
-    auto res = SDL_RenderDrawLine(_sdl, ax, ay, bx, by);
-    // TODO
+   // SDL_SetRenderDrawColor(_sdl, fg_color);
+   //auto res = SDL_RenderDrawLine(_sdl, ax, ay, bx, by);
+
+    const SDL_Color sdl_color 
+    { 
+        color565_red(fg_color),
+        color565_green(fg_color),
+        color565_blue(fg_color),
+     };
+
+    auto d = std::sqrtf((bx - ax)*(bx - ax) + (by - ay)*(by - ay));
+    auto y_shift = wd * (bx - ax) / (d * 2.0f);
+    auto x_shift = - wd * (by - ay) / (d * 2.0f);
+
+    const std::vector<SDL_Vertex> verts =
+    {
+        { SDL_FPoint{ ax - x_shift, ay - y_shift }, sdl_color, SDL_FPoint{ 0 }, },
+        { SDL_FPoint{ ax + x_shift, ay + y_shift }, sdl_color, SDL_FPoint{ 0 }, },
+        { SDL_FPoint{ bx + x_shift, by + y_shift }, sdl_color, SDL_FPoint{ 0 }, },
+        { SDL_FPoint{ bx - x_shift, by - y_shift }, sdl_color, SDL_FPoint{ 0 }, },
+    };
+
+    auto res = SDL_RenderGeometry(_sdl, nullptr, verts.data(), verts.size(), nullptr, 0);
 }
 
 void tft_fill_triangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color565)
 {
-    //SDL_SetRenderDrawColor(_sdl, color565);
-
     const SDL_Color sdl_color 
     { 
-        // color565_red(color565),
-        // color565_green(color565),
-        // color565_blue(color565),
-        RED(color565),
-        GREEN(color565),
-        BLUE(color565)
+        color565_red(color565),
+        color565_green(color565),
+        color565_blue(color565),
      };
 
     const std::vector<SDL_Vertex> verts =
@@ -146,7 +159,7 @@ void tft_fill_triangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t x
         { SDL_FPoint{ (float)x2, (float)y2 }, sdl_color, SDL_FPoint{ 0 }, },
     };
 
-   auto res = SDL_RenderGeometry(_sdl, nullptr, verts.data(), verts.size(), nullptr, 0);
+  auto res = SDL_RenderGeometry(_sdl, nullptr, verts.data(), verts.size(), nullptr, 0);
 }
 
 #endif
