@@ -6,16 +6,52 @@
 
 #ifndef ARDUINO
 
+#include <logs.h>
 #include <SDL2/SDL.h>
 
 extern SDL_Renderer* _sdl;
 
-#define RED(r)   (uint8_t)(((r) & 0xf800) >> 11)
-#define GREEN(g) (uint8_t)(((g) & 0x07e0) >> 5)
-#define BLUE(b)  (uint8_t)((b) & 0x001f)
+
+
+#define RED(r)   (uint8_t)(round(r >> 11) / 31 * 255)
+#define GREEN(g) (uint8_t)(round((g >> 5) & 0b111111) / 31 * 255)
+#define BLUE(b)  (uint8_t)(round(b & 0b11111) / 31 * 255)
+
+inline uint8_t color565_scale(uint16_t color)
+{
+    return round(color / 31 * 255);
+}
+
+inline uint8_t color565_red(uint16_t color565)
+{
+    auto red5 = color565 >> 11;
+    // auto green6 = (color565 >> 5) & 0b111111;
+    // auto blue5 = color565 & 0b11111;
+
+    return color565_scale(red5);
+}
+
+inline uint8_t color565_green(uint16_t color565)
+{
+    auto red5 = color565 >> 11;
+    auto green6 = (color565 >> 5) & 0b111111;
+    auto blue5 = color565 & 0b11111;
+
+    return color565_scale(green6);
+}
+
+inline uint8_t color565_blue(uint16_t color565)
+{
+    // auto red5 = color565 >> 11;
+    // auto green6 = (color565 >> 5) & 0b111111;
+    auto blue5 = color565 & 0b11111;
+
+    return color565_scale(blue5);
+}
 
 inline int SDL_SetRenderDrawColor(SDL_Renderer* render, uint16_t color565)
 {
+    log_d("R: %d, G: %d, B: %d", color565_red(YELLOWCLEAR), color565_green(YELLOWCLEAR), color565_blue(YELLOWCLEAR));
     return SDL_SetRenderDrawColor(
         render, 
         RED(color565),

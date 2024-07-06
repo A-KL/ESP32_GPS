@@ -6,8 +6,8 @@
 #include <math.h>
 #include <map>
 
-#include "files.h"
-#include "graphics.h"
+#include <geometry.h>
+#include <files.h>
 
 #define MAPBLOCKS_MAX 6         // max blocks in memory
 #define MAPBLOCK_SIZE_BITS 12   // 4096 x 4096 coords (~meters) per block  
@@ -34,4 +34,4 @@ struct MemCache {
     // uint32_t total_inview_polygons = 0;
 };
 
-void get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCache);
+bool get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCache);

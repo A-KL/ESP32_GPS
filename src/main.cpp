@@ -1,12 +1,11 @@
 
 #include <colors.h>
-#include <graphics.h>
+#include <geometry.h>
 #include <gps.h>
 #include <files.h>
 #include <maps.h>
 #include <canvas.h>
 #include "../lib/conf.h"
-
 #include "draw.h"
 
 #ifdef ARDUINO
@@ -32,7 +31,7 @@ ViewPort viewPort(map_center, zoom_level, TFT_WIDTH, TFT_HEIGHT);
 IFileSystem* fileSystem = get_file_system(MAPS_LOCATION);
 
 void Setup()
-{ 
+{
     tft_init();
 
     if (!init_file_system()) {
@@ -47,8 +46,11 @@ void Setup()
     // TODO: keep and show last position
 
     viewPort.setCenter(map_center);
-    get_map_blocks(fileSystem, viewPort.bbox, memCache );
-    draw(viewPort, memCache);
+
+    auto result = get_map_blocks(fileSystem, viewPort.bbox, memCache);
+    while (!result);
+
+    draw(viewPort, memCache, zoom_level);
 
     tft_msg("Waiting for satellites...");
 }
@@ -99,8 +101,8 @@ void Loop()
 
     if (moved) {
         viewPort.setCenter(p);
-        get_map_blocks(fileSystem, viewPort.bbox, memCache);
-        draw(viewPort, memCache);
+        auto res = get_map_blocks(fileSystem, viewPort.bbox, memCache);
+        draw(viewPort, memCache, zoom_level);
         tft_header(coord, mode);
         tft_footer(std::to_string(zoom_level).c_str());
         delay(10);

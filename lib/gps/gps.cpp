@@ -1,7 +1,6 @@
 #include <math.h>
 #include <stdint.h>
-#include <graphics.h>
-
+//#include <geometry.h>
 #include "gps.h"
 #include "../conf.h"
 

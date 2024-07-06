@@ -10,10 +10,8 @@
 #include <cstring>
 #include <stdexcept>
 #include <files.h>
-#include <graphics.h>
-#include <canvas.h>
-#include "../conf.h"
 
+#include "../conf.h"
 #include "maps.h"
 
 // @brief Returns the int16 or 0 if empty
@@ -209,7 +207,7 @@ void read_map_block(IReadStream& file, MapBlock* result)
     assert(count == 0);
 }
 
-void get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCache)
+bool get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCache)
 {
     log_d("get_map_blocks %i", millis());
 
@@ -266,9 +264,8 @@ void get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCach
         auto stream = fileSystem->Open(file_name);
 
         if (!stream) {
-            snprintf(file_name, sizeof(file_name), "Map file not found: %s/%d/%d.fmp", folder_name, block_x, block_y);
-            tft_header_msg(file_name);
-            while(true);
+            log_e("Map file not found: %s/%d/%d.fmp", folder_name, block_x, block_y);
+            return false;
         }
 
         read_map_block(*stream, new_block);
@@ -285,5 +282,6 @@ void get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCach
         log_d("FreeHeap: %i", esp_get_free_heap_size());
     }   
 
-    //log_d("memCache size: %i %i", memCache.blocks.size(), millis());
+    log_d("memCache size: %i %i", memCache.blocks.size(), millis());
+    return true;
 }
