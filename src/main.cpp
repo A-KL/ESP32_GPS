@@ -1,4 +1,4 @@
-#include <logs.h>
+
 #include <colors.h>
 #include <graphics.h>
 #include <gps.h>
@@ -12,6 +12,7 @@
 #ifdef ARDUINO
     #include "arduino_app.h"
 #else
+    #include <logs.h>
     #include "sdl_app.h"
 #endif
 
@@ -28,10 +29,9 @@ double prev_lng = 500;
 Point32 map_center(INIT_POS);
 ViewPort viewPort(map_center, zoom_level, TFT_WIDTH, TFT_HEIGHT);
 
-const char* base_folder = "/Users/anatolii.klots/Documents/Sources/OSM_Extract/maps/mymap";
-IFileSystem* fileSystem = get_file_system(base_folder);
+IFileSystem* fileSystem = get_file_system(MAPS_LOCATION);
 
-void Run()
+void Setup()
 { 
     tft_init();
 

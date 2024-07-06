@@ -5,6 +5,10 @@
     #include <cassert>
 #endif
 
+#include <stdio.h>
+#include <string>
+#include <cstring>
+#include <stdexcept>
 #include <files.h>
 #include <graphics.h>
 #include <canvas.h>

@@ -1,21 +1,15 @@
 #ifdef ARDUINO
-    #include <Arduino.h>
-    #include "SD.h"
-    #include "FS.h"
-    #include "SPI.h"
-    #include <StreamUtils.h>
-#else
-    #include <iostream>
-    #include <fstream>
-#endif
 
 #include <canvas.h>
-#include <draw.h>
 
 #include "files.h"
 #include "../conf.h"
 
-#ifdef ARDUINO
+#include <Arduino.h>
+#include "SD.h"
+#include "FS.h"
+#include "SPI.h"
+#include <StreamUtils.h>
 
 class ArduinoReadFileStream : public IReadStream {
     public:
@@ -50,19 +44,19 @@ class ArduinoFileStreamFactory : public IFileSystem {
         }
 };
 
-bool init_sd_card() {
+bool init_file_system() {
     if (!SD.begin(SD_CS_PIN)) {
         Serial.println("Card Mount Failed");
         return false;
     }
     uint8_t cardType = SD.cardType();
-    
+
     if (cardType == CARD_NONE) {
         Serial.println("No SD card attached");
         tft_header_msg("No SD card attached");
         return false;
     }
-    
+
     Serial.print("SD Card Type: ");
     if (cardType == CARD_MMC) {
         Serial.println("MMC");
@@ -80,55 +74,8 @@ bool init_sd_card() {
     return true;
 }
 
-bool init_file_system() {
-    return init_sd_card();
-}
-
 IFileSystem* get_file_system(const char* root) {
     return new ArduinoFileStreamFactory(root);
 }
 
-#else
-
-class LocalFileStream : public IReadStream {
-    public:
-        LocalFileStream(const char* fileName) {
-            _stream = new std::ifstream(fileName);
-        }
-
-        virtual int read() {
-            char buffer[1];
-            _stream->read(buffer, 1);
-            return *buffer;
-        };
-
-        ~LocalFileStream() {
-            _stream->close();
-            delete _stream;
-        }
-
-    private:
-        std::ifstream* _stream;
-};
-
-class LocalFileStreamFactory : public IFileSystem {
-    public:
-        LocalFileStreamFactory(const char* root = NULL) : _root(root)
-        {}
-
-        inline virtual IReadStream* Open(const char* fileName) const {
-            auto fullPath =  _root + "/" + fileName;
-            return new LocalFileStream(fullPath.c_str());
-        }
-    private:
-        std::string _root;
-};
-
-bool init_file_system() {
-    return true;
-}
-
-IFileSystem* get_file_system(const char* root) {
-    return new LocalFileStreamFactory(root);
-}
 #endif

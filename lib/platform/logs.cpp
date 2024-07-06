@@ -1,3 +1,5 @@
+#ifndef ARDUINO
+
 #include <chrono>
 #include <stdio.h>
 #include <stdarg.h>
@@ -45,3 +47,5 @@ long long millis()
 
     return milliseconds;
 }
+
+#endif
