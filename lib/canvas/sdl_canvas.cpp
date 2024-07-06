@@ -42,13 +42,12 @@ inline int SDL_SetRenderDrawColor(SDL_Renderer* render, uint16_t color565)
 {
     return SDL_SetRenderDrawColor(
         render, 
-        color565_red(color565),
-        color565_green(color565),
-        color565_blue(color565),
-        
-        //  RED(color565),
-        //  GREEN(color565),
-        //  BLUE(color565),
+        // color565_red(color565),
+        // color565_green(color565),
+        // color565_blue(color565),
+         RED(color565),
+         GREEN(color565),
+         BLUE(color565),
         0); //SDL_ALPHA_OPAQUE
 }
 
@@ -67,7 +66,7 @@ void tft_msg(const char* msg)
 
 void tft_header(const Coord& pos, const int mode)
 {
-    SDL_Rect rect { 0, 0, TFT_WIDTH, 25 };
+    SDL_Rect rect { 0, 0, SCREEN_WIDTH, 25 };
 
     SDL_SetRenderDrawColor(_sdl, YELLOWCLEAR);
     SDL_RenderFillRect(_sdl, &rect);
@@ -82,7 +81,7 @@ void tft_header(const Coord& pos, const int mode)
 
 void tft_header_msg(const char* msg)
 {
-    SDL_Rect rect { 0, 0, TFT_WIDTH, 25 };
+    SDL_Rect rect { 0, 0, SCREEN_WIDTH, 25 };
 
     SDL_SetRenderDrawColor(_sdl, YELLOWCLEAR);
     SDL_RenderFillRect(_sdl, &rect);
@@ -94,7 +93,7 @@ void tft_header_msg(const char* msg)
 
 void tft_footer_msg(const char* msg)
 {
-    SDL_Rect rect { 0, 300, TFT_WIDTH, TFT_HEIGHT};
+    SDL_Rect rect { 0, SCREEN_HEIGHT - 20, SCREEN_WIDTH, SCREEN_HEIGHT};
 
     SDL_SetRenderDrawColor(_sdl, CYAN);
     SDL_RenderFillRect(_sdl, &rect);

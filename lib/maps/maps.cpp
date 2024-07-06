@@ -111,8 +111,8 @@ void read_map_block(IReadStream& file, MapBlock* result)
         // log_d("line: %i", line);
         parse_str_until( file, '\n', str); // color
         assert( str[0] == '0' && str[1] == 'x');
-        polygon.color = (uint16_t )std::stoul( str, nullptr, 16);
-        // log_d("polygon.color: %i", polygon.color);
+        polygon.color = (uint16_t)std::stoul(str, nullptr, 16);
+        //log_d("polygon.color: %i\n", polygon.color);
         line++;
         parse_str_until( file, '\n', str); // maxzoom
         polygon.maxzoom = str[0] ? (uint8_t )std::stoi( str) : MAX_ZOOM;

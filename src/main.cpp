@@ -26,7 +26,7 @@ double prev_lat = 500;
 double prev_lng = 500;
 
 Point32 map_center(INIT_POS);
-ViewPort viewPort(map_center, zoom_level, TFT_WIDTH, TFT_HEIGHT);
+ViewPort viewPort(map_center, zoom_level, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 IFileSystem* fileSystem = get_file_system(MAPS_LOCATION);
 

@@ -52,8 +52,8 @@ int main()
 		"SDL Maps Renderer",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		TFT_WIDTH, 
-        TFT_HEIGHT, 
+		SCREEN_WIDTH, 
+        SCREEN_HEIGHT, 
 		SDL_WINDOW_RESIZABLE ); //| SDL_WINDOW_METAL
 
 	if (window == NULL) {

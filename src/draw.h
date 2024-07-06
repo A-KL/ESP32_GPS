@@ -20,35 +20,40 @@ inline int16_t toScreenCoord(const int32_t pxy, const int32_t screen_center_xy, 
     return round((double)(pxy - screen_center_xy) / zoom_level) + (double)SCREEN_WIDTH / 2.0;
 }
 
-void fill_polygon(const Polygon& p) // scanline fill algorithm
+// scanline fill algorithm
+void draw_fill_polygon(const Polygon& p)
 {
     int16_t maxy = p.bbox.max.y;
     int16_t miny = p.bbox.min.y;
 
-    if(maxy >= SCREEN_HEIGHT) maxy = SCREEN_HEIGHT-1;
-    if(miny < 0) miny = 0;
-    if(miny >= maxy){
+    if (maxy >= SCREEN_HEIGHT) 
+        maxy = SCREEN_HEIGHT-1;
+
+    if (miny < 0) 
+        miny = 0;
+
+    if (miny >= maxy)
         return;
-    }
-    int16_t nodeX[p.points.size()], pixelY;
+
+    int16_t nodeX[p.points.size()];
 
     //  Loop through the rows of the image.
     int16_t nodes, i , swap;
-    for( pixelY=miny; pixelY <= maxy; pixelY++) {  //  Build a list of nodes.        
+    for (auto pixelY=miny; pixelY <= maxy; pixelY++) {  //  Build a list of nodes.        
         nodes=0;
-        for( int i=0; i < (p.points.size() - 1); i++) {
-            if( (p.points[i].y < pixelY && p.points[i+1].y >= pixelY) ||
+        for (int i=0; i < (p.points.size() - 1); i++) {
+            if ((p.points[i].y < pixelY && p.points[i+1].y >= pixelY) ||
                 (p.points[i].y >= pixelY && p.points[i+1].y < pixelY)) {
                     nodeX[nodes++] = 
                         p.points[i].x + double(pixelY-p.points[i].y)/double(p.points[i+1].y-p.points[i].y) * 
                         double(p.points[i+1].x-p.points[i].x);
                 }
         }
-        assert( nodes < p.points.size());
+        assert(nodes < p.points.size());
 
         //  Sort the nodes, via a simple “Bubble” sort.
         i=0;
-        while( i < nodes-1) {   // TODO: rework
+        while (i < nodes-1) {   // TODO: rework
             if( nodeX[i] > nodeX[i+1]) {
                 swap=nodeX[i]; nodeX[i]=nodeX[i+1]; nodeX[i+1]=swap; 
                 i=0;  
@@ -100,7 +105,7 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level)
                     toScreenCoord( p.x, screen_center_mc.x, zoom_level),
                     toScreenCoord( p.y, screen_center_mc.y, zoom_level)));
             }
-            fill_polygon( new_polygon);
+            draw_fill_polygon(new_polygon);
             
         }
         log_d("Block polygons done %i ms", millis()-block_time);
