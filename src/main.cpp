@@ -47,12 +47,10 @@ void Setup()
 
     viewPort.setCenter(map_center);
 
-    // auto result = get_map_blocks(fileSystem, viewPort.bbox, memCache);
-    // while (!result);
+    auto result = get_map_blocks(fileSystem, viewPort.bbox, memCache);
+    while (!result);
 
-   // draw(viewPort, memCache, zoom_level);
-
-    tft_draw_wide_line(0,0, 200, 200, 5, RED, RED);
+    draw(viewPort, memCache, zoom_level);
 
     tft_msg("Waiting for satellites...");
 }
@@ -106,7 +104,7 @@ void Loop()
         auto res = get_map_blocks(fileSystem, viewPort.bbox, memCache);
         draw(viewPort, memCache, zoom_level);
         tft_header(coord, mode);
-        tft_footer(std::to_string(zoom_level).c_str());
+        tft_footer_msg(std::to_string(zoom_level).c_str());
         delay(10);
     }
 }

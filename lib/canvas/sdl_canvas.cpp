@@ -42,12 +42,13 @@ inline int SDL_SetRenderDrawColor(SDL_Renderer* render, uint16_t color565)
 {
     return SDL_SetRenderDrawColor(
         render, 
-        // color565_red(color565),
-        // color565_green(color565),
-        // color565_blue(color565),
-         RED(color565),
-         GREEN(color565),
-         BLUE(color565),
+        color565_red(color565),
+        color565_green(color565),
+        color565_blue(color565),
+        
+        //  RED(color565),
+        //  GREEN(color565),
+        //  BLUE(color565),
         0); //SDL_ALPHA_OPAQUE
 }
 
@@ -55,6 +56,11 @@ void tft_init()
 { }
 
 void tft_println(const char* text)
+{
+// TODO
+}
+
+void tft_msg(const char* msg)
 {
 // TODO
 }
@@ -86,7 +92,7 @@ void tft_header_msg(const char* msg)
     // tft.print(msg);
 }
 
-void tft_footer(const char* msg)
+void tft_footer_msg(const char* msg)
 {
     SDL_Rect rect { 0, 300, TFT_WIDTH, TFT_HEIGHT};
 
@@ -96,12 +102,6 @@ void tft_footer(const char* msg)
     // tft.fillRect(0, 300, 240, 320, CYAN);
     // tft.setCursor(5,305,2);
     // tft.println(msg);
-}
-
-
-void tft_msg(const char* msg)
-{
-// TODO
 }
 
 void tft_fill_screen()
@@ -118,8 +118,9 @@ void tft_draw_line(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint32_t colo
 
 void tft_draw_wide_line(float ax, float ay, float bx, float by, float wd, uint32_t fg_color, uint32_t bg_color)
 {
-   // SDL_SetRenderDrawColor(_sdl, fg_color);
-   //auto res = SDL_RenderDrawLine(_sdl, ax, ay, bx, by);
+    auto d = std::sqrtf((bx - ax)*(bx - ax) + (by - ay)*(by - ay));
+    auto y_shift = wd * (bx - ax) / (d * 2.0f);
+    auto x_shift = - wd * (by - ay) / (d * 2.0f);
 
     const SDL_Color sdl_color 
     { 
@@ -127,10 +128,6 @@ void tft_draw_wide_line(float ax, float ay, float bx, float by, float wd, uint32
         color565_green(fg_color),
         color565_blue(fg_color),
      };
-
-    auto d = std::sqrtf((bx - ax)*(bx - ax) + (by - ay)*(by - ay));
-    auto y_shift = wd * (bx - ax) / (d * 2.0f);
-    auto x_shift = - wd * (by - ay) / (d * 2.0f);
 
     const std::vector<SDL_Vertex> verts =
     {
@@ -140,12 +137,14 @@ void tft_draw_wide_line(float ax, float ay, float bx, float by, float wd, uint32
         { SDL_FPoint{ bx - x_shift, by - y_shift }, sdl_color, SDL_FPoint{ 0 }, },
     };
 
-    auto res = SDL_RenderGeometry(_sdl, nullptr, verts.data(), verts.size(), nullptr, 0);
+    int indexs[] = { 0,1,2, 0,2,3 };
+
+    auto res = SDL_RenderGeometry(_sdl, nullptr, verts.data(), verts.size(), indexs, sizeof(indexs)/sizeof(int));
 }
 
 void tft_fill_triangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color565)
 {
-    const SDL_Color sdl_color 
+    const SDL_Color sdl_color
     { 
         color565_red(color565),
         color565_green(color565),
@@ -159,7 +158,7 @@ void tft_fill_triangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t x
         { SDL_FPoint{ (float)x2, (float)y2 }, sdl_color, SDL_FPoint{ 0 }, },
     };
 
-  auto res = SDL_RenderGeometry(_sdl, nullptr, verts.data(), verts.size(), nullptr, 0);
+    auto res = SDL_RenderGeometry(_sdl, nullptr, verts.data(), verts.size(), nullptr, 0);
 }
 
 #endif

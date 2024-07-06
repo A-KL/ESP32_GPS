@@ -80,11 +80,11 @@ int main()
     //std::cout << time / std::chrono::milliseconds(1) << "ms to run.\n";
 
 	do {
-		//Loop();
+		Loop();
 
 		SDL_Delay(10);
 		SDL_PollEvent(&event);
-		//SDL_RenderPresent(_sdl);
+		SDL_RenderPresent(_sdl);
 	} 
 	while (event.type != SDL_QUIT);
 
