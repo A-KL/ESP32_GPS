@@ -52,19 +52,17 @@ inline int SDL_SetRenderDrawColor(SDL_Renderer* render, uint16_t color565)
         0); //SDL_ALPHA_OPAQUE
 }
 
-void SDL_RenderText(int32_t x0, int32_t y0, const char* msg, uint16_t color565)
+void SDL_RenderText(int32_t x0, int32_t y0, const char* msg)
 {
-    SDL_Rect rect { 0, 0, SCREEN_WIDTH, 25 };
     SDL_Color White = {255, 255, 255};
 
-    TTF_Font* font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", 20);
+    TTF_Font* font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", 16);
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, msg, White);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(_sdl, textSurface);
 
     SDL_Rect textRect { x0, y0, 0, 0 };
 
-    SDL_SetRenderDrawColor(_sdl, color565);
-    SDL_RenderFillRect(_sdl, &rect);
+    TTF_SizeText(font, msg, &textRect.w, &textRect.h);
 
     SDL_RenderCopy(_sdl, textTexture, NULL, &textRect);
 
@@ -76,27 +74,42 @@ void SDL_RenderText(int32_t x0, int32_t y0, const char* msg, uint16_t color565)
 void tft_init()
 { }
 
-void tft_println(const char* text)
+void tft_println(const char* msg)
 {
-// TODO
+    SDL_Rect rect { 0, 0, SCREEN_WIDTH, 25 };
+
+    SDL_SetRenderDrawColor(_sdl, YELLOWCLEAR);
+    SDL_RenderFillRect(_sdl, &rect);
+
+    SDL_RenderText(2, 2, msg);
 }
 
 void tft_msg(const char* msg)
 {
-    SDL_RenderText(5, 5, msg, CYAN);
+    SDL_Rect rect { 0, 0, SCREEN_WIDTH, 25 };
+
+    SDL_SetRenderDrawColor(_sdl, CYAN);
+    SDL_RenderFillRect(_sdl, &rect);
+
+    SDL_RenderText(2, 2, msg);
+}
+
+void tft_header_msg(const char* msg)
+{
+    SDL_Rect rect { 0, 0, SCREEN_WIDTH, 25 };
+
+    SDL_SetRenderDrawColor(_sdl, YELLOWCLEAR);
+    SDL_RenderFillRect(_sdl, &rect);
+
+    SDL_RenderText(2, 2, msg);
 }
 
 void tft_header(const Coord& pos, const int mode)
 {
     char text[50];
-    snprintf(text, 50, "%f %f  Sats: %d M: %d", pos.lng, pos.lat, pos.satellites, mode);
+    snprintf(text, 50, "%f %f Sats: %d M: %d", pos.lng, pos.lat, pos.satellites, mode);
 
-    SDL_RenderText(5, 5, text, YELLOWCLEAR);
-}
-
-void tft_header_msg(const char* msg)
-{
-    SDL_RenderText(5, 5, msg, YELLOWCLEAR);
+    tft_header_msg(text);
 }
 
 void tft_footer_msg(const char* msg)
@@ -106,9 +119,7 @@ void tft_footer_msg(const char* msg)
     SDL_SetRenderDrawColor(_sdl, CYAN);
     SDL_RenderFillRect(_sdl, &rect);
 
-    // tft.fillRect(0, 300, 240, 320, CYAN);
-    // tft.setCursor(5,305,2);
-    // tft.println(msg);
+    SDL_RenderText(2, SCREEN_HEIGHT + 2, msg);
 }
 
 void tft_fill_screen()

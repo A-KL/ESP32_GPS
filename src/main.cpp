@@ -34,11 +34,13 @@ void Setup()
 {
     tft_init();
 
+    tft_footer_msg(std::to_string(zoom_level).c_str());
+
     if (!init_file_system()) {
         tft_println("Error: SD Card Mount Failed!");
         while(true);
     }
-    log_i("SRat value: %d", 123);
+    log_i("SRat value: %d\n", 123);
 
     tft_println("Reading map...");
 
