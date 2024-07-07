@@ -78,7 +78,7 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level)
 
     Polygon new_polygon;
     uint32_t total_time = millis();
-    log_d("Draw start %i", total_time);
+    log_d("Draw start %i\n", total_time);
 
     int16_t p1x, p1y, p2x, p2y;
     for( MapBlock* mblock: memCache.blocks){
@@ -108,7 +108,7 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level)
             draw_fill_polygon(new_polygon);
             
         }
-        log_d("Block polygons done %i ms", millis()-block_time);
+        log_d("Block polygons done %i ms\n", millis()-block_time);
         block_time = millis();
         
         ////// Lines
@@ -128,9 +128,9 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level)
                     line.width/zoom_level ?: 1, line.color, line.color);
             }
         }
-        log_d("Block lines done %i ms", millis()-block_time);
+        log_d("Block lines done %i ms\n", millis()-block_time);
     }
-    log_d("Total %i ms", millis()-total_time);
+    log_d("Total %i ms\n", millis()-total_time);
 
 
     // TODO: paint only in NAV mode
@@ -139,7 +139,7 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level)
         SCREEN_WIDTH/2 + 4, SCREEN_HEIGHT/2 + 5, 
         SCREEN_WIDTH/2,     SCREEN_HEIGHT/2 - 6, 
         RED);
-    log_d("Draw done! %i", millis());
+    log_d("Draw done! %i\n", millis());
 }
 
 // void stats(ViewPort& viewPort, MapBlock& mblock)

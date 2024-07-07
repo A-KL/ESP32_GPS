@@ -6,43 +6,39 @@
 
 #ifndef ARDUINO
 
+#include <cstdio>
 #include <logs.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
 extern SDL_Renderer* _sdl;
 
-#define RED(r)   (uint8_t)(round(r >> 11) / 31 * 255)
-#define GREEN(g) (uint8_t)(round((g >> 5) & 0b111111) / 31 * 255)
-#define BLUE(b)  (uint8_t)(round(b & 0b11111) / 31 * 255)
-
-inline uint8_t color565_scale(uint16_t color)
-{
-    return round(color / 31 * 255);
-}
+#define RED(r)   (uint8_t)(round(r >> 11) / 31.0 * 255)
+#define GREEN(g) (uint8_t)(round((g >> 5) & 0b111111) / 63.0 * 255)
+#define BLUE(b)  (uint8_t)(round(b & 0b11111) / 31.0 * 255)
 
 inline uint8_t color565_red(uint16_t color565)
 {
     auto red5 = color565 >> 11;
-    return color565_scale(red5);
+    return round(red5 / 31.0 * 255);
 }
 
 inline uint8_t color565_green(uint16_t color565)
 {
     auto green6 = (color565 >> 5) & 0b111111;
-    return color565_scale(green6);
+    return round(green6 / 63.0 * 255);
 }
 
  inline uint8_t color565_blue(uint16_t color565)
 {
     auto blue5 = color565 & 0b11111;
-    return color565_scale(blue5);
+    return round(blue5 / 31.0 * 255);
 }
 
 inline int SDL_SetRenderDrawColor(SDL_Renderer* render, uint16_t color565)
 {
     return SDL_SetRenderDrawColor(
-        render, 
+        render,
         // color565_red(color565),
         // color565_green(color565),
         // color565_blue(color565),
@@ -54,9 +50,9 @@ inline int SDL_SetRenderDrawColor(SDL_Renderer* render, uint16_t color565)
 
 void SDL_RenderText(int32_t x0, int32_t y0, const char* msg)
 {
-    SDL_Color White = {255, 255, 255};
+    SDL_Color White = {0, 0, 0};
 
-    TTF_Font* font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", 16);
+    TTF_Font* font = TTF_OpenFont(FONT_NAME, FONT_SIZE);
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, msg, White);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(_sdl, textSurface);
 
