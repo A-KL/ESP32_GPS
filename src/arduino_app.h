@@ -8,14 +8,14 @@
 #include <gps.h>
 #include <files.h>
 #include <maps.h>
-#include <canvas.h>
 
 #include "../lib/conf.h"
 
+extern TFT_eSPI tft;
 
 void Setup();
 
-void Loop();
+bool Loop();
 
 void printFreeMem()
 {
@@ -48,6 +48,16 @@ void setup()
     gpsInit();
 
     digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
+
+    tft.init();
+    tft.setRotation(0);  // portrait
+    tft.invertDisplay( true);
+    tft.fillScreen( CYAN);
+    tft.setTextColor(TFT_BLACK);
+    digitalWrite( TFT_BLK_PIN, HIGH);
+    tft.setCursor(5,5,4);
+    tft.println("Initializing...");
+    digitalWrite( TFT_BLK_PIN, HIGH);
 
     Setup();
 

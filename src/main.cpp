@@ -4,7 +4,6 @@
 #include <gps.h>
 #include <files.h>
 #include <maps.h>
-#include <canvas.h>
 #include "../lib/conf.h"
 #include "draw.h"
 
@@ -19,6 +18,8 @@ MemCache memCache;
 Coord coord;
 std::vector<Coord> samples;
 
+TFT_eSPI tft;
+
 int zoom_level = PIXEL_SIZE_DEF; // zoom_level = 1 correspond aprox to 1 meter / pixel
 int mode = DEVMODE_NAV;
 
@@ -32,17 +33,13 @@ IFileSystem* fileSystem = get_file_system(MAPS_LOCATION);
 
 void Setup()
 {
-    tft_init();
-
-    tft_footer_msg(std::to_string(zoom_level).c_str());
-
     if (!init_file_system()) {
-        tft_println("Error: SD Card Mount Failed!");
+        tft.println("Error: SD Card Mount Failed!");
         while(true);
     }
     log_i("SRat value: %d\n", 123);
 
-    tft_println("Reading map...");
+    tft.println("Reading map...");
 
     Point32 map_center(INIT_POS);
     // TODO: keep and show last position
@@ -82,7 +79,7 @@ bool Loop()
             mode = DEVMODE_NAV;
             moved = true; // recenter
         }
-        tft_header(coord, mode);
+        tft_header(coord);
        //delay(200); // button debouncing
     }
 
@@ -104,8 +101,8 @@ bool Loop()
         viewPort.setCenter(p);
         auto res = get_map_blocks(fileSystem, viewPort.bbox, memCache);
         draw(viewPort, memCache, zoom_level, mode);
-        tft_header(coord, mode);
-        tft_footer_msg(std::to_string(zoom_level).c_str());
+        tft_header(coord);
+        tft_footer(std::to_string(zoom_level).c_str());
         delay(10);
     }
 

@@ -13,8 +13,8 @@
 #define MAPBLOCK_SIZE_BITS 12   // 4096 x 4096 coords (~meters) per block  
 #define MAPFOLDER_SIZE_BITS 4   // 16 x 16 map blocks per folder
 
-const int32_t MAPBLOCK_MASK  = pow( 2, MAPBLOCK_SIZE_BITS) - 1;     // ...00000000111111111111
-const int32_t MAPFOLDER_MASK = pow( 2, MAPFOLDER_SIZE_BITS) - 1;    // ...00001111
+const int32_t MAPBLOCK_MASK  = pow(2, MAPBLOCK_SIZE_BITS) - 1;     // ...00000000111111111111
+const int32_t MAPFOLDER_MASK = pow(2, MAPFOLDER_SIZE_BITS) - 1;    // ...00001111
 
 /// @brief Map square area of aprox 4096 meters side. Correspond to one single map file.
 struct MapBlock {

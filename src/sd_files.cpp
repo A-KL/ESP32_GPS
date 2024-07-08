@@ -1,15 +1,17 @@
 #ifdef ARDUINO
 
-#include <canvas.h>
-
-#include "files.h"
-#include "../conf.h"
-
 #include <Arduino.h>
+#include <TFT_eSPI.h>
 #include "FS.h"
 #include "SD.h"
 #include "SPI.h"
 #include <StreamUtils.h>
+
+#include <draw.h>
+
+#include "../conf.h"
+
+#include "files.h"
 
 class ArduinoReadFileStream : public IReadStream {
     public:
@@ -53,7 +55,7 @@ bool init_file_system() {
 
     if (cardType == CARD_NONE) {
         Serial.println("No SD card attached");
-        tft_header_msg("No SD card attached");
+        header_msg("No SD card attached");
         return false;
     }
 

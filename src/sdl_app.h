@@ -5,10 +5,14 @@
 #include <chrono>
 #include <iostream>
 
+#include <TFT_eSPI.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
 SDL_Renderer* _sdl;
+
+extern TFT_eSPI tft;
 
 void Setup();
 
@@ -85,6 +89,8 @@ int main()
 	SDL_RendererInfo info;
 	SDL_GetRendererInfo(_sdl, &info);
 	printf("[SDL] Renderer backend: %s\n", info.name);
+
+	tft.setRender(_sdl);
 
 	// auto start_time = std::chrono::high_resolution_clock::now();
 
