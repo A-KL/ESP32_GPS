@@ -17,14 +17,6 @@ void Setup();
 
 bool Loop();
 
-void printFreeMem()
-{
-    log_i("FreeHeap: %i", esp_get_free_heap_size());
-    log_i("Heap minimum_free_heap_size: %i", esp_get_minimum_free_heap_size());
-    log_i("Heap largest_free_block: %i", heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
-    log_i("Task watermark: %i", uxTaskGetStackHighWaterMark(NULL));
-}
-
 bool ReadInput(int pin)
 {
     return digitalRead(pin) == LOW;
@@ -41,23 +33,25 @@ void setup()
     pinMode( MENU_BUTTON, INPUT_PULLUP);
     pinMode( TFT_BLK_PIN, OUTPUT);
     // pinMode( GPS_CE, OUTPUT);
-    digitalWrite( TFT_BLK_PIN, LOW); // switch off display
+
+    digitalWrite(TFT_BLK_PIN, LOW); // switch off display
 
     Serial.begin(115200);
     // printFreeMem();
     gpsInit();
 
     digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
+    digitalWrite(TFT_CS, HIGH); // TFT chip select
 
     tft.init();
     tft.setRotation(0);  // portrait
     tft.invertDisplay( true);
     tft.fillScreen( CYAN);
     tft.setTextColor(TFT_BLACK);
-    digitalWrite( TFT_BLK_PIN, HIGH);
+    digitalWrite(TFT_BLK_PIN, HIGH);
     tft.setCursor(5,5,4);
     tft.println("Initializing...");
-    digitalWrite( TFT_BLK_PIN, HIGH);
+    digitalWrite(TFT_BLK_PIN, HIGH);
 
     Setup();
 

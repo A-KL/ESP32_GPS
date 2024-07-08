@@ -14,7 +14,7 @@
 
 
 TFT_eSPI::TFT_eSPI() 
-    : _sdl(NULL), _cursorX(0), _cursorY(0) 
+    : _sdl(NULL), _cursorX(0), _cursorY(0), _textColor(0)
 {};
 
 void TFT_eSPI::setRender(SDL_Renderer* sdl)
@@ -37,18 +37,18 @@ void TFT_eSPI::invertDisplay(bool invert)
 
 }
 
-void TFT_eSPI::fillScreen(uint32_t color)
+void TFT_eSPI::fillScreen(uint16_t color)
 {
     SDL_SetRenderDrawColor565(_sdl, color);
     SDL_RenderClear(_sdl);
 }
 
-void TFT_eSPI::setTextColor(uint32_t color)
+void TFT_eSPI::setTextColor(uint16_t color)
 {
-
+    _textColor = color;
 }
 
-void TFT_eSPI::setCursor(int x, int y, int z)
+void TFT_eSPI::setCursor(int x, int y, int font)
 {
     _cursorX = x;
     _cursorY = y;
@@ -56,17 +56,28 @@ void TFT_eSPI::setCursor(int x, int y, int z)
 
 void TFT_eSPI::println(const char* text)
 {
-    SDL_RenderText(_sdl, 0, 0, text);
+    SDL_RenderText(_sdl, _cursorX, _cursorY, text);
 }
 
 void TFT_eSPI::print(const char* text)
 {
-    SDL_RenderText(_sdl, 0, 0, text);
+    SDL_RenderText(_sdl, _cursorX, _cursorY, text);
+}
+
+void TFT_eSPI::printf(const char* format, ...)
+{
+    char text[50];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(text, 50, format, args);
+   // vprintf(format, args);
+    va_end(args);  
+    SDL_RenderText(_sdl, _cursorX, _cursorY, text);
 }
 
 void TFT_eSPI::print(const char* text, int position)
 {
-    SDL_RenderText(_sdl, 0, 0, text);
+    SDL_RenderText(_sdl, _cursorX, _cursorY, text);
 }
 
 void TFT_eSPI::print(int value)
@@ -79,7 +90,7 @@ void TFT_eSPI::print(int value, int position)
     SDL_RenderText(_sdl, 0, 0, std::to_string(value).c_str());
 }
 
-void TFT_eSPI::fillRect(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint32_t color)
+void TFT_eSPI::fillRect(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint16_t color)
 {
     SDL_Rect rect { x0, y0, x1, y1 };
 
@@ -88,13 +99,13 @@ void TFT_eSPI::fillRect(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint32_t
     SDL_RenderFillRect(_sdl, &rect);
 }
 
-void TFT_eSPI::drawLine(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint32_t color)
+void TFT_eSPI::drawLine(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint16_t color)
 {
     SDL_SetRenderDrawColor565(_sdl, color);
     SDL_RenderDrawLine(_sdl, x0, y0, x1, y1);
 }
 
-void TFT_eSPI::drawWideLine(float ax, float ay, float bx, float by, float wd, uint32_t fg_color, uint32_t bg_color)
+void TFT_eSPI::drawWideLine(float ax, float ay, float bx, float by, float wd, uint16_t fg_color, uint16_t bg_color)
 {
     auto d = sqrtf((bx - ax)*(bx - ax) + (by - ay)*(by - ay));
     auto y_shift = wd * (bx - ax) / (d * 2.0f);
@@ -120,7 +131,7 @@ void TFT_eSPI::drawWideLine(float ax, float ay, float bx, float by, float wd, ui
     SDL_RenderGeometry(_sdl, nullptr, verts.data(), verts.size(), indexes, sizeof(indexes)/sizeof(int));
 }
 
-void TFT_eSPI::fillTriangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color)
+void TFT_eSPI::fillTriangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint16_t color)
 {
     const SDL_Color sdl_color
     { 
@@ -139,7 +150,7 @@ void TFT_eSPI::fillTriangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int3
     auto res = SDL_RenderGeometry(_sdl, nullptr, verts.data(), verts.size(), nullptr, 0);
 }
 
-void TFT_eSPI::fillCircle(int32_t x0, int32_t y0, int32_t radius, uint32_t color)
+void TFT_eSPI::fillCircle(int32_t x0, int32_t y0, int32_t radius, uint16_t color)
 {
     SDL_SetRenderDrawColor565(_sdl, color);
 
@@ -155,22 +166,22 @@ void TFT_eSPI::fillCircle(int32_t x0, int32_t y0, int32_t radius, uint32_t color
     }
 }
 
-inline int TFT_eSPI::SDL_SetRenderDrawColor565(SDL_Renderer* render, uint16_t color565)
+inline int TFT_eSPI::SDL_SetRenderDrawColor565(SDL_Renderer* render, uint16_t color)
 {
     return SDL_SetRenderDrawColor(
         render,
-        RED(color565),
-        GREEN(color565),
-        BLUE(color565),
+        RED(color),
+        GREEN(color),
+        BLUE(color),
         SDL_ALPHA_OPAQUE);
 }
 
 void TFT_eSPI::SDL_RenderText(SDL_Renderer* render, int32_t x0, int32_t y0, const char* msg)
 {
-    SDL_Color White = {0, 0, 0};
+    SDL_Color Black = {0, 0, 0};
 
     TTF_Font* font = TTF_OpenFont(FONT_NAME, FONT_SIZE);
-    SDL_Surface* textSurface = TTF_RenderText_Solid(font, msg, White);
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, msg, Black);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(render, textSurface);
 
     SDL_Rect textRect { x0, y0, 0, 0 };

@@ -31,8 +31,18 @@ ViewPort viewPort(map_center, zoom_level, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 IFileSystem* fileSystem = get_file_system(MAPS_LOCATION);
 
+void printFreeMem()
+{
+    log_i("FreeHeap: %i", esp_get_free_heap_size());
+    log_i("Heap minimum_free_heap_size: %i", esp_get_minimum_free_heap_size());
+    log_i("Heap largest_free_block: %i", heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
+    log_i("Task watermark: %i", uxTaskGetStackHighWaterMark(NULL));
+}
+
 void Setup()
 {
+    // printFreeMem();
+    
     if (!init_file_system()) {
         tft.println("Error: SD Card Mount Failed!");
         while(true);
