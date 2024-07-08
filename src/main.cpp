@@ -18,7 +18,6 @@
 
 TFT_eSPI tft;
 MemCache memCache;
-Coord coord;
 std::vector<Coord> samples;
 
 int zoom_level = PIXEL_SIZE_DEF; // zoom_level = 1 correspond aprox to 1 meter / pixel
@@ -105,11 +104,11 @@ void setup()
 
 bool Loop()
 {
+    Coord coord;
     Point32 p = viewPort.center;
     bool moved = false;
 
     if (mode == DEVMODE_NAV) {
-        Coord coord;
         gpsGetPosition(coord);
 
         if (coord.isValid && 
