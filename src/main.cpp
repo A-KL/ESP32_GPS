@@ -7,6 +7,8 @@
 #include "../lib/conf.h"
 #include "draw.h"
 
+ #include <Arduino.h>
+
 #ifdef ARDUINO
     #include "arduino_app.h"
 #else
@@ -14,54 +16,91 @@
     #include "sdl_app.h"
 #endif
 
+TFT_eSPI tft;
 MemCache memCache;
 Coord coord;
 std::vector<Coord> samples;
 
-TFT_eSPI tft;
-
 int zoom_level = PIXEL_SIZE_DEF; // zoom_level = 1 correspond aprox to 1 meter / pixel
 int mode = DEVMODE_NAV;
-
 double prev_lat = 500;
 double prev_lng = 500;
 
-Point32 map_center(INIT_POS);
-ViewPort viewPort(map_center, zoom_level, SCREEN_WIDTH, SCREEN_HEIGHT);
-
+Point32 map_center_point(INIT_POS);
+ViewPort viewPort(map_center_point, zoom_level, SCREEN_WIDTH, SCREEN_HEIGHT);
 IFileSystem* fileSystem = get_file_system(MAPS_LOCATION);
 
-void printFreeMem()
-{
-    log_i("FreeHeap: %i", esp_get_free_heap_size());
-    log_i("Heap minimum_free_heap_size: %i", esp_get_minimum_free_heap_size());
-    log_i("Heap largest_free_block: %i", heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
-    log_i("Task watermark: %i", uxTaskGetStackHighWaterMark(NULL));
+void printFreeMem() {
+    log_i("FreeHeap: %i\n", esp_get_free_heap_size());
+    log_i("Heap minimum_free_heap_size: %i\n", esp_get_minimum_free_heap_size());
+    log_i("Heap largest_free_block: %i\n", heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
+    log_i("Task watermark: %i\n", uxTaskGetStackHighWaterMark(NULL));
 }
 
-void Setup()
+void gpioInit() {
+    pinMode( UP_BUTTON, INPUT_PULLUP);
+    pinMode( DOWN_BUTTON, INPUT_PULLUP);
+    pinMode( LEFT_BUTTON, INPUT_PULLUP);
+    pinMode( RIGHT_BUTTON, INPUT_PULLUP);
+    pinMode( SELECT_BUTTON, INPUT_PULLUP);
+    pinMode( TFT_OFF_BUTTON, INPUT_PULLUP);
+    pinMode( MENU_BUTTON, INPUT_PULLUP);
+    pinMode( TFT_BLK_PIN, OUTPUT);
+    // pinMode( GPS_CE, OUTPUT);
+}
+
+void tftOn() {
+    digitalWrite(TFT_BLK_PIN, HIGH);
+}
+
+void tftfOff() {
+    digitalWrite(TFT_BLK_PIN, LOW); // switch off display
+}
+
+void setup()
 {
-    // printFreeMem();
-    
+    gpioInit();
+    tftfOff();
+
+    serialInit();
+
+    digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
+    digitalWrite(TFT_CS, HIGH); // TFT chip select
+
+    tft.init();
+    tft.setRotation(0);  // portrait
+    tft.invertDisplay(true);
+    tft.fillScreen(CYAN);
+    tft.setTextColor(BLACK);
+    tftOn();
+    tft.setCursor(5,5,4);
+    tft.println("Initializing...");
+    tftOn();
+
+    printFreeMem();
+
     if (!init_file_system()) {
         tft.println("Error: SD Card Mount Failed!");
-        while(true);
+        stop();
     }
-    log_i("SRat value: %d\n", 123);
 
     tft.println("Reading map...");
-
-    Point32 map_center(INIT_POS);
-    // TODO: keep and show last position
-
-    viewPort.setCenter(map_center);
-
+    viewPort.setCenter(map_center_point);
     auto result = get_map_blocks(fileSystem, viewPort.bbox, memCache);
-    while (!result);
 
+    if (!result) {
+        tft.println("Error: Unable to read map!");
+        stop();
+    }
+    
     draw(viewPort, memCache, zoom_level, mode);
 
     tft_msg("Waiting for satellites...");
+
+    // stats(viewPort, mmap);
+    // printFreeMem();
+
+    sleepInit();
 }
 
 bool Loop()

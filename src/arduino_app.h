@@ -13,54 +13,30 @@
 
 extern TFT_eSPI tft;
 
-void Setup();
-
 bool Loop();
 
-bool ReadInput(int pin)
-{
+bool ReadInput(int pin) {
     return digitalRead(pin) == LOW;
 }
 
-void setup()
+void serialInit()
 {
-    pinMode( UP_BUTTON, INPUT_PULLUP);
-    pinMode( DOWN_BUTTON, INPUT_PULLUP);
-    pinMode( LEFT_BUTTON, INPUT_PULLUP);
-    pinMode( RIGHT_BUTTON, INPUT_PULLUP);
-    pinMode( SELECT_BUTTON, INPUT_PULLUP);
-    pinMode( TFT_OFF_BUTTON, INPUT_PULLUP);
-    pinMode( MENU_BUTTON, INPUT_PULLUP);
-    pinMode( TFT_BLK_PIN, OUTPUT);
-    // pinMode( GPS_CE, OUTPUT);
-
-    digitalWrite(TFT_BLK_PIN, LOW); // switch off display
-
     Serial.begin(115200);
     // printFreeMem();
-    gpsInit();
+    #ifdef ARDUINO_uPesy_WROVER
+    #else   
+        SerialGPS.begin(9600, SERIAL_8N1, GPS_TX, GPS_RX);
+    #endif
+}
 
-    digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
-    digitalWrite(TFT_CS, HIGH); // TFT chip select
-
-    tft.init();
-    tft.setRotation(0);  // portrait
-    tft.invertDisplay( true);
-    tft.fillScreen( CYAN);
-    tft.setTextColor(TFT_BLACK);
-    digitalWrite(TFT_BLK_PIN, HIGH);
-    tft.setCursor(5,5,4);
-    tft.println("Initializing...");
-    digitalWrite(TFT_BLK_PIN, HIGH);
-
-    Setup();
-
-    // stats(viewPort, mmap);
-    // printFreeMem();
-
+void sleepInit(){
     // digitalWrite( GPS_CE, HIGH); // GPS low power mode disabled
     gpio_wakeup_enable( (gpio_num_t )TFT_OFF_BUTTON, GPIO_INTR_LOW_LEVEL);
     esp_sleep_enable_gpio_wakeup();
+}
+
+void stop() {
+    while(true);
 }
 
 void loop()

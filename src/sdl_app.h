@@ -14,7 +14,13 @@ SDL_Renderer* _sdl;
 
 extern TFT_eSPI tft;
 
-void Setup();
+bool stop_process = false;
+
+void stop() {
+    stop_process = true;
+}
+
+void setup();
 
 bool Loop();
 
@@ -48,6 +54,12 @@ bool ReadInput(int pin)
 			return false;
 	}
 }
+
+void serialInit()
+{}
+
+void sleepInit()
+{}
 
 int main()
 {
@@ -94,7 +106,7 @@ int main()
 
 	// auto start_time = std::chrono::high_resolution_clock::now();
 
-    Setup();
+    setup();
 	SDL_RenderPresent(_sdl);
 
     // auto end_time = std::chrono::high_resolution_clock::now();

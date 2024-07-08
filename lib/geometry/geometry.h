@@ -134,7 +134,7 @@ struct Polygon {
 struct ViewPort 
 {
     ViewPort(const Point32& location, const uint16_t zoom, const uint16_t w, const uint16_t h) 
-    : center(location), zoom_level(zoom), screen_width(w), screen_height(h)
+        : center(location), zoom_level(zoom), screen_width(w), screen_height(h)
     {}
 
     inline void setCenter(const Point32& location) {
@@ -144,6 +144,13 @@ struct ViewPort
         bbox.max.x = location.x + screen_width  * zoom_level / 2;
         bbox.max.y = location.y + screen_height * zoom_level / 2;
     }
+
+    // inline void setCenter(const float x, const float y) {
+    //     center.x = x;
+    //     center.y = y;
+
+    //     setCenter(center);
+    // }
 
     Point32 center;
     BBox bbox;
