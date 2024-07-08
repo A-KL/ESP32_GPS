@@ -7,11 +7,10 @@
 #include "../lib/conf.h"
 #include "draw.h"
 
- #include <Arduino.h>
-
 #ifdef ARDUINO
     #include "arduino_app.h"
 #else
+    #include <EArduino.h>
     #include <logs.h>
     #include "sdl_app.h"
 #endif
@@ -61,7 +60,7 @@ void setup()
     gpioInit();
     tftfOff();
 
-    serialInit();
+    gpsInit();
 
     digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
     digitalWrite(TFT_CS, HIGH); // TFT chip select

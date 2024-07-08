@@ -19,16 +19,6 @@ bool ReadInput(int pin) {
     return digitalRead(pin) == LOW;
 }
 
-void serialInit()
-{
-    Serial.begin(115200);
-    // printFreeMem();
-    #ifdef ARDUINO_uPesy_WROVER
-    #else   
-        SerialGPS.begin(9600, SERIAL_8N1, GPS_TX, GPS_RX);
-    #endif
-}
-
 void sleepInit(){
     // digitalWrite( GPS_CE, HIGH); // GPS low power mode disabled
     gpio_wakeup_enable( (gpio_num_t )TFT_OFF_BUTTON, GPIO_INTR_LOW_LEVEL);

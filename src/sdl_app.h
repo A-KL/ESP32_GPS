@@ -55,8 +55,8 @@ bool ReadInput(int pin)
 	}
 }
 
-void serialInit()
-{}
+// void serialInit()
+// {}
 
 void sleepInit()
 {}

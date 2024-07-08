@@ -14,6 +14,16 @@
 TinyGPSPlus gps;
 HardwareSerial SerialGPS(1);
 
+void gpsInit()
+{
+    Serial.begin(115200);
+    // printFreeMem();
+    #ifdef ARDUINO_uPesy_WROVER
+    #else   
+        SerialGPS.begin(9600, SERIAL_8N1, GPS_TX, GPS_RX);
+    #endif
+}
+
 /// @brief Get the current position from the GPS chip
 /// @param serialGPS handler
 /// @return projected coordinates in meters
@@ -66,6 +76,9 @@ using namespace nmea;
 
 NMEAParser parser;
 GPSService gps(parser);
+
+void gpsInit()
+{}
 
 void gpsGetPosition(Coord& coord)
 {
