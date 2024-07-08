@@ -12,7 +12,7 @@ SDL_Renderer* _sdl;
 
 void Setup();
 
-void Loop();
+bool Loop();
 
 void delay(uint32_t msec)
 {
@@ -50,6 +50,8 @@ int main()
     auto init_sdl = SDL_Init(SDL_INIT_VIDEO);
 	auto init_tff = TTF_Init();
 
+	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
+
 	if (init_sdl == -1) {
 		fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
 		return 1;
@@ -73,17 +75,20 @@ int main()
 		return EXIT_FAILURE;
 	}
 
-	_sdl = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	_sdl = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
 	if (_sdl == NULL) {
 		fprintf(stderr, "ERROR: can't create renderer: %s\n", SDL_GetError());
 		return EXIT_FAILURE;
 	}
 
+	SDL_RendererInfo info;
+	SDL_GetRendererInfo(_sdl, &info);
+	printf("[SDL] Renderer backend: %s\n", info.name);
+
 	// auto start_time = std::chrono::high_resolution_clock::now();
 
     Setup();
-
 	SDL_RenderPresent(_sdl);
 
     // auto end_time = std::chrono::high_resolution_clock::now();
@@ -93,15 +98,17 @@ int main()
 	SDL_Event event;
 
 	do {
-		Loop();
-
 		SDL_Delay(10);
 		SDL_PollEvent(&event);
-		SDL_RenderPresent(_sdl);
+
+		if (Loop()) {
+        	SDL_RenderPresent(_sdl);
+		}
 	} 
 	while (event.type != SDL_QUIT);
 
 	SDL_DestroyRenderer(_sdl);
+	SDL_DestroyWindow(window);
 	SDL_Quit();
 
 	return 0;

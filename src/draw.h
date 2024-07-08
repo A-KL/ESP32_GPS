@@ -72,7 +72,7 @@ void draw_fill_polygon(const Polygon& p)
     }
 }
 
-void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level)
+void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode)
 {
     tft_fill_screen();
 
@@ -81,7 +81,9 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level)
     log_d("Draw start %i\n", total_time);
 
     int16_t p1x, p1y, p2x, p2y;
-    for( MapBlock* mblock: memCache.blocks){
+
+    for (MapBlock* mblock: memCache.blocks)
+    {
         uint32_t block_time = millis();
         if( !mblock->inView) continue;
 
@@ -133,12 +135,18 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level)
     log_d("Total %i ms\n", millis()-total_time);
 
 
-    // TODO: paint only in NAV mode
-    tft_fill_triangle(
-        SCREEN_WIDTH/2 - 4, SCREEN_HEIGHT/2 + 5, 
-        SCREEN_WIDTH/2 + 4, SCREEN_HEIGHT/2 + 5, 
-        SCREEN_WIDTH/2,     SCREEN_HEIGHT/2 - 6, 
-        RED);
+    if (mode == DEVMODE_NAV) {
+        // TODO: paint only in NAV mode
+        tft_fill_triangle(
+            SCREEN_WIDTH/2 - 4, SCREEN_HEIGHT/2 + 5, 
+            SCREEN_WIDTH/2 + 4, SCREEN_HEIGHT/2 + 5, 
+            SCREEN_WIDTH/2,     SCREEN_HEIGHT/2 - 6, 
+            RED);
+    } else {
+        tft_fill_circle(
+            SCREEN_WIDTH/2 - 4, SCREEN_HEIGHT/2 + 5, 5, RED);
+    }
+
     log_d("Draw done! %i\n", millis());
 }
 

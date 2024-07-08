@@ -78,6 +78,11 @@ void tft_fill_triangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t x
     tft.fillTriangle(x0, y0, x1, y1, x2, y2, color);
 }
 
+void tft_fill_circle(int32_t x0, int32_t y0, int32_t radius,  uint32_t color565)
+{
+    
+}
+
 void tft_header_msg(const char* msg)
 {
     tft.fillRect(0, 0, 240, 25, YELLOWCLEAR);

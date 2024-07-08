@@ -45,7 +45,7 @@ inline int SDL_SetRenderDrawColor(SDL_Renderer* render, uint16_t color565)
          RED(color565),
          GREEN(color565),
          BLUE(color565),
-        0); //SDL_ALPHA_OPAQUE
+        SDL_ALPHA_OPAQUE);
 }
 
 void SDL_RenderText(int32_t x0, int32_t y0, const char* msg)
@@ -173,6 +173,22 @@ void tft_fill_triangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t x
     };
 
     auto res = SDL_RenderGeometry(_sdl, nullptr, verts.data(), verts.size(), nullptr, 0);
+}
+
+void tft_fill_circle(int32_t x0, int32_t y0, int32_t radius,  uint32_t color565)
+{
+    SDL_SetRenderDrawColor(_sdl, color565);
+
+    for (int w = 0; w < radius * 2; w++) {
+        for (int h = 0; h < radius * 2; h++) {
+            int dx = radius - w; // horizontal offset
+            int dy = radius - h; // vertical offset
+            if ((dx*dx + dy*dy) <= (radius * radius))
+            {
+                SDL_RenderDrawPoint(_sdl, x0 + dx, y0 + dy);
+            }
+        }
+    }
 }
 
 #endif
