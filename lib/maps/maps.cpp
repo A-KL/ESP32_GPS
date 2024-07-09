@@ -278,8 +278,8 @@ bool get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCach
 
         assert(memCache.blocks.size() <= MAPBLOCKS_MAX);
 
-        log_d("Block readed from SD card: %p", new_block);
-        log_d("FreeHeap: %i", esp_get_free_heap_size());
+        log_d("Block read from SD card: %p\n", new_block);
+        log_d("FreeHeap: %i\n", esp_get_free_heap_size());
     }   
 
     log_d("memCache size: %i %i\n", memCache.blocks.size(), millis());

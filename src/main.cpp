@@ -60,7 +60,7 @@ void setup()
     gpioInit();
     tftfOff();
 
-    gpsInit();
+    //gpsInit();
 
     digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
     digitalWrite(TFT_CS, HIGH); // TFT chip select
@@ -98,7 +98,7 @@ void setup()
     // stats(viewPort, mmap);
     // printFreeMem();
 
-    sleepInit();
+   // sleepInit();
 }
 
 bool Loop()

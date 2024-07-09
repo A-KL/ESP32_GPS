@@ -12,21 +12,11 @@
 #define DEVMODE_MENU 4
 
 // Buttons GPIO nums
-#define UP_BUTTON 03
-#define DOWN_BUTTON 04
-#define LEFT_BUTTON 15
-#define RIGHT_BUTTON 16
-#define SELECT_BUTTON 07
+#define UP_BUTTON 03 // ok
+#define DOWN_BUTTON 39 //!
+#define LEFT_BUTTON 15 // ok
+#define RIGHT_BUTTON 37 //!
+
+#define SELECT_BUTTON 38
 #define TFT_OFF_BUTTON 05
-#define MENU_BUTTON 5
-
-#define TFT_BLK_PIN 21
-#define TFT_CS 10
-
-
-#define SD_MISO_PIN 13
-#define SD_CS_PIN 14
-
-#define GPS_RX 17
-#define GPS_TX 18
-// #define GPS_CE 14
+//#define MENU_BUTTON 05

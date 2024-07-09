@@ -52,7 +52,20 @@ void getPosition(HardwareSerial& serialGPS, Coord& coord)
 
 void gpsGetPosition(Coord& coord)
 {
-    getPosition(SerialGPS, coord);
+    coord.lat = 41.419769;
+    coord.lng = 2.103490;
+
+    coord.altitude = static_cast<int16_t>(10);
+    coord.direction = static_cast<int16_t>(15); // degrees
+    coord.satellites = static_cast<int16_t>(4);
+    
+    coord.isValid = true;
+    coord.isUpdated = true;
+
+    coord.hour = 12;
+    coord.minute = 33;
+    coord.second = 12;
+    //getPosition(SerialGPS, coord);
 }
 
 // Serial.print("LAT=");  Serial.println(gps.location.lat(), 6);
