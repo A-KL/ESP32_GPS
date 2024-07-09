@@ -42,7 +42,7 @@ void gpioInit() {
     pinMode( RIGHT_BUTTON, INPUT_PULLUP);
     pinMode( SELECT_BUTTON, INPUT_PULLUP);
     pinMode( TFT_OFF_BUTTON, INPUT_PULLUP);
-    pinMode( MENU_BUTTON, INPUT_PULLUP);
+    //pinMode( MENU_BUTTON, INPUT_PULLUP);
     pinMode( TFT_BLK_PIN, OUTPUT);
     // pinMode( GPS_CE, OUTPUT);
 }

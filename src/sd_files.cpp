@@ -37,13 +37,16 @@ class ArduinoReadFileStream : public IReadStream {
 
 class ArduinoFileStreamFactory : public IFileSystem {
     public:
-        ArduinoFileStreamFactory(const char* root = NULL)
+        ArduinoFileStreamFactory(const char* root = NULL) : _root(root)
         {}
 
         virtual IReadStream* Open(const char* fileName) const
         {
-            return new ArduinoReadFileStream(fileName);
+            auto fullPath =  _root + "/" + fileName;
+            return new ArduinoReadFileStream(fullPath.c_str());
         }
+    private:
+        std::string _root;
 };
 
 bool init_file_system() {
