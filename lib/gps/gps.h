@@ -15,6 +15,10 @@ inline double lon2x(double lon) { return          DEG2RAD(lon)                 *
 
 /// @brief Point in geografic (lat,lon) coordinates and other gps data
 struct Coord {
+    Coord(): Coord(0, 0)
+    {}
+    Coord(double _lat, double _lng): lat(_lat), lng(_lng)
+    {}
     Point32 getPoint32() {
         return Point32(lon2x(lng), lat2y(lat));
     }

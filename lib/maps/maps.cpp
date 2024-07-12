@@ -100,7 +100,7 @@ void read_map_block(IReadStream& file, MapBlock* result)
     int16_t count = parse_int16( file);
     assert(count > 0);
     line++;
-    log_d("count: %i", count);
+    log_d("count: %i\n", count);
 
     uint32_t total_points = 0;
     Polygon polygon;

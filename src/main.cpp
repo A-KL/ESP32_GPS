@@ -24,7 +24,8 @@ int mode = DEVMODE_NAV;
 double prev_lat = 500;
 double prev_lng = 500;
 
-Point32 map_center_point(INIT_POS);
+Coord map_center_coord(INIT_POS);
+Point32 map_center_point = map_center_coord.getPoint32();
 ViewPort viewPort(map_center_point, zoom_level, SCREEN_WIDTH, SCREEN_HEIGHT);
 IFileSystem* fileSystem = get_file_system(MAPS_LOCATION);
 
