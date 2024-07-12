@@ -1,7 +1,7 @@
 #pragma once
 
-#define SCREEN_WIDTH TFT_WIDTH //240    // tft.width()
-#define SCREEN_HEIGHT TFT_HEIGHT //320   // tft.height()
+#define SCREEN_WIDTH TFT_WIDTH //240
+#define SCREEN_HEIGHT TFT_HEIGHT //320
 
 #define PIXEL_SIZE_DEF 2    // in meters
 #define MAX_ZOOM 7

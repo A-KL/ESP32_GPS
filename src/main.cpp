@@ -22,7 +22,7 @@ std::vector<Coord> samples;
 double prev_lat = DEFAULT_LAT;
 double prev_lng = DEFAULT_LON;
 int zoom_level = PIXEL_SIZE_DEF; // zoom_level = 1 correspond aprox to 1 meter / pixel
-int mode = DEVMODE_MOVE;
+int mode = DEVMODE_NAV;// DEVMODE_MOVE;
 bool moved = true;
 
 Coord map_center_coord(DEFAULT_LAT, DEFAULT_LON);
@@ -38,12 +38,12 @@ void printFreeMem() {
 }
 
 void gpioInit() {
-    pinMode( UP_BUTTON, INPUT_PULLUP);
-    pinMode( DOWN_BUTTON, INPUT_PULLUP);
-    pinMode( LEFT_BUTTON, INPUT_PULLUP);
-    pinMode( RIGHT_BUTTON, INPUT_PULLUP);
-    pinMode( SELECT_BUTTON, INPUT_PULLUP);
-    pinMode( TFT_OFF_BUTTON, INPUT_PULLUP);
+    // pinMode( UP_BUTTON, INPUT_PULLUP);
+    // pinMode( DOWN_BUTTON, INPUT_PULLUP);
+    // pinMode( LEFT_BUTTON, INPUT_PULLUP);
+    // pinMode( RIGHT_BUTTON, INPUT_PULLUP);
+    // pinMode( SELECT_BUTTON, INPUT_PULLUP);
+    // pinMode( TFT_OFF_BUTTON, INPUT_PULLUP);
     //pinMode( MENU_BUTTON, INPUT_PULLUP);
     pinMode( TFT_BLK_PIN, OUTPUT);
     // pinMode( GPS_CE, OUTPUT);
@@ -62,25 +62,26 @@ void setup()
     gpioInit();
     tftfOff();
 
-    gpsInit();
+    Serial.begin(115200);
+    // printFreeMem();
+    //gpsInit();
 
-    digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
+    //digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
     digitalWrite(TFT_CS, HIGH); // TFT chip select
 
     tft.init();
-    tft.setRotation(0);  // portrait
-    tft.invertDisplay(true);
+    tft.setRotation(TFT_ROTATE);
     tft.fillScreen(CYAN);
     tft.setTextColor(BLACK);
-    tftOn();
     tft.setCursor(5,5,4);
     tft.println("Initializing...");
     tftOn();
 
-    printFreeMem();
+    //printFreeMem();
 
     if (!init_file_system()) {
         tft.println("Error: SD Card Mount Failed!");
+        log_e("Error: SD Card Mount Failed!");
         stop();
     }
 
@@ -100,12 +101,12 @@ void setup()
     // stats(viewPort, mmap);
     // printFreeMem();
 
-   // sleepInit();
-    tft.flush();
+    // sleepInit();
+    //tft.flush();
 }
 
 void loop()
-{
+{    
     Coord coord;
     Point32 p = viewPort.center;
     //sleepLoop();

@@ -15,11 +15,9 @@ HardwareSerial SerialGPS(1);
 
 void gpsInit()
 {
-    Serial.begin(115200);
-    // printFreeMem();
     #ifdef ARDUINO_uPesy_WROVER
     #else   
-        SerialGPS.begin(9600, SERIAL_8N1, GPS_TX, GPS_RX);
+        SerialGPS.begin(9600, SERIAL_8N1, GPS_RX, GPS_TX);
     #endif
 }
 
