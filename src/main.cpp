@@ -19,13 +19,13 @@ TFT_eSPI tft;
 MemCache memCache;
 std::vector<Coord> samples;
 
+double prev_lat = DEFAULT_LAT;
+double prev_lng = DEFAULT_LON;
 int zoom_level = PIXEL_SIZE_DEF; // zoom_level = 1 correspond aprox to 1 meter / pixel
 int mode = DEVMODE_MOVE;
-double prev_lat = 500;
-double prev_lng = 500;
 bool moved = true;
 
-Coord map_center_coord(INIT_POS);
+Coord map_center_coord(DEFAULT_LAT, DEFAULT_LON);
 Point32 map_center_point = map_center_coord.getPoint32();
 ViewPort viewPort(map_center_point, zoom_level, SCREEN_WIDTH, SCREEN_HEIGHT);
 IFileSystem* fileSystem = get_file_system(MAPS_LOCATION);
