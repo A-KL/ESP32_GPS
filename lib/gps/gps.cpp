@@ -1,6 +1,5 @@
 #include <math.h>
 #include <stdint.h>
-//#include <geometry.h>
 
 #include "../conf.h"
 

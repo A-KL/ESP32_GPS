@@ -10,26 +10,24 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+
+
 SDL_Renderer* _sdl;
 
 extern TFT_eSPI tft;
 
-bool stop_process = false;
-
-void stop() {
-    stop_process = true;
-}
-
 void setup();
 
-bool Loop();
+void loop();
 
+#define CUSTOM_DELAY
 void delay(uint32_t msec)
 {
     SDL_Delay(msec);
 }
 
-bool ReadInput(int pin)
+#define CUSTOM_DIGITAL_READ
+int digitalRead(int pin)
 {
 	const Uint8* state = SDL_GetKeyboardState(nullptr);
 
@@ -55,10 +53,16 @@ bool ReadInput(int pin)
 	}
 }
 
-// void serialInit()
-// {}
+void stop()
+{}
+
+void serialInit()
+{}
 
 void sleepInit()
+{}
+
+void sleepLoop()
 {}
 
 int main()
@@ -119,9 +123,10 @@ int main()
 		SDL_Delay(10);
 		SDL_PollEvent(&event);
 
-		if (Loop()) {
-        	SDL_RenderPresent(_sdl);
-		}
+		loop();
+		// if () {
+        // 	SDL_RenderPresent(_sdl);
+		// }
 	} 
 	while (event.type != SDL_QUIT);
 

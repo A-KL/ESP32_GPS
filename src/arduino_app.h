@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef ARDUINO
+
 #include <Arduino.h>
 #include <TFT_eSPI.h>
 
@@ -11,42 +13,14 @@
 
 #include "../lib/conf.h"
 
-extern TFT_eSPI tft;
-
-bool Loop();
-
-bool ReadInput(int pin) {
-    return digitalRead(pin) == LOW;
-}
-
 void sleepInit(){
     // digitalWrite( GPS_CE, HIGH); // GPS low power mode disabled
     gpio_wakeup_enable( (gpio_num_t )TFT_OFF_BUTTON, GPIO_INTR_LOW_LEVEL);
     esp_sleep_enable_gpio_wakeup();
 }
 
-void stop() {
-    while(true);
-}
-
-void loop()
+void sleepLoop()
 {
-    // Point32 p = viewPort.center;
-    // bool moved = false;
-
-    // if (mode == DEVMODE_NAV) {
-    //     Coord coord;
-    //     gpsGetPosition(coord);
-    //     if (coord.isValid && 
-    //         abs(coord.lat-prev_lat) > 0.00005 &&
-    //         abs(coord.lng-prev_lng) > 0.00005) {
-    //             p = coord.getPoint32();
-    //             prev_lat = coord.lat;
-    //             prev_lng = coord.lng;
-    //             moved = true;
-    //         }   
-    // }
-
     if (digitalRead(TFT_OFF_BUTTON) == LOW) {
         digitalWrite(TFT_BLK_PIN, LOW);
         // digitalWrite( GPS_CE, LOW); // GPS low power mode. TODO: this way needs cold restart => don't work for tracking
@@ -68,39 +42,11 @@ void loop()
         digitalWrite( TFT_BLK_PIN, HIGH);
         delay(400); // button debounce
     }
-
-    Loop();
-
-    // if (digitalRead(SELECT_BUTTON) == LOW) {
-    //     mode += 1;
-    //     if( mode > DEVMODE_ZOOM){ 
-    //         mode = DEVMODE_NAV;
-    //         moved = true; // recenter
-    //     }
-    //     tft_header(coord, mode);
-    //     delay(200); // button debouncing
-    // }
-
-    // if (mode == DEVMODE_MOVE) {
-    //     if( digitalRead( UP_BUTTON) == LOW)    { p.y += 40*zoom_level; moved = true; }
-    //     if( digitalRead( DOWN_BUTTON) == LOW)  { p.y -= 40*zoom_level; moved = true; }
-    //     if( digitalRead( LEFT_BUTTON) == LOW)  { p.x -= 40*zoom_level; moved = true; }
-    //     if( digitalRead( RIGHT_BUTTON) == LOW) { p.x += 40*zoom_level; moved = true; }
-    // }
-
-    // if (mode == DEVMODE_ZOOM) {
-    //     if( digitalRead( UP_BUTTON) == LOW)    { zoom_level += 1; moved = true; }
-    //     if( digitalRead( DOWN_BUTTON) == LOW)  { zoom_level -= 1; moved = true; }
-    //     if( zoom_level < 1){ zoom_level = 1; moved = false; } 
-    //     if( zoom_level > MAX_ZOOM){ zoom_level = MAX_ZOOM; moved = false; }
-    // }
-
-    // if (moved) {
-    //     viewPort.setCenter(p);
-    //     get_map_blocks(fileSystem, viewPort.bbox, memCache);
-    //     draw(viewPort, memCache);
-    //     tft_header(coord, mode);
-    //     tft_footer(String(zoom_level).c_str());
-    //     delay(10);
-    // }
 }
+
+void stop()
+{
+    while(true);
+}
+
+#endif

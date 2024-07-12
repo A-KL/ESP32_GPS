@@ -10,9 +10,9 @@
 #ifdef ARDUINO
     #include "arduino_app.h"
 #else
+    #include "sdl_app.h"
     #include <EArduino.h>
     #include <logs.h>
-    #include "sdl_app.h"
 #endif
 
 TFT_eSPI tft;
@@ -102,11 +102,13 @@ void setup()
    // sleepInit();
 }
 
-bool Loop()
+void loop()
 {
     Coord coord;
     Point32 p = viewPort.center;
     bool moved = false;
+
+    sleepLoop();
 
     if (mode == DEVMODE_NAV) {
         gpsGetPosition(coord);
@@ -121,7 +123,7 @@ bool Loop()
             }   
     }
 
-    if (ReadInput(SELECT_BUTTON)) {
+    if (digitalRead(SELECT_BUTTON)) {
         mode += 1;
         if( mode > DEVMODE_ZOOM){ 
             mode = DEVMODE_NAV;
@@ -132,15 +134,15 @@ bool Loop()
     }
 
     if (mode == DEVMODE_MOVE) {
-        if( ReadInput( UP_BUTTON))    { p.y += 40*zoom_level; moved = true; }
-        if( ReadInput( DOWN_BUTTON))  { p.y -= 40*zoom_level; moved = true; }
-        if( ReadInput( LEFT_BUTTON))  { p.x -= 40*zoom_level; moved = true; }
-        if( ReadInput( RIGHT_BUTTON)) { p.x += 40*zoom_level; moved = true; }
+        if( digitalRead( UP_BUTTON))    { p.y += 40*zoom_level; moved = true; }
+        if( digitalRead( DOWN_BUTTON))  { p.y -= 40*zoom_level; moved = true; }
+        if( digitalRead( LEFT_BUTTON))  { p.x -= 40*zoom_level; moved = true; }
+        if( digitalRead( RIGHT_BUTTON)) { p.x += 40*zoom_level; moved = true; }
     }
 
     if (mode == DEVMODE_ZOOM) {
-        if( ReadInput( UP_BUTTON))    { zoom_level += 1; moved = true; }
-        if( ReadInput( DOWN_BUTTON))  { zoom_level -= 1; moved = true; }
+        if( digitalRead( UP_BUTTON))    { zoom_level += 1; moved = true; }
+        if( digitalRead( DOWN_BUTTON))  { zoom_level -= 1; moved = true; }
         if( zoom_level < 1){ zoom_level = 1; moved = false; } 
         if( zoom_level > MAX_ZOOM){ zoom_level = MAX_ZOOM; moved = false; }
     }
@@ -154,5 +156,5 @@ bool Loop()
         delay(10);
     }
 
-    return moved;
+   // return moved;
 }
