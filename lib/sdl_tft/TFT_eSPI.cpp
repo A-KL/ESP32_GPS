@@ -27,6 +27,11 @@ void TFT_eSPI::init()
     
 }
 
+void TFT_eSPI::flush()
+{
+    SDL_RenderPresent(_sdl);
+}
+
 void TFT_eSPI::setRotation(int rotation)
 {
 

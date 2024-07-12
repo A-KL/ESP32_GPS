@@ -20,9 +20,10 @@ MemCache memCache;
 std::vector<Coord> samples;
 
 int zoom_level = PIXEL_SIZE_DEF; // zoom_level = 1 correspond aprox to 1 meter / pixel
-int mode = DEVMODE_NAV;
+int mode = DEVMODE_MOVE;
 double prev_lat = 500;
 double prev_lng = 500;
+bool moved = true;
 
 Coord map_center_coord(INIT_POS);
 Point32 map_center_point = map_center_coord.getPoint32();
@@ -100,15 +101,14 @@ void setup()
     // printFreeMem();
 
    // sleepInit();
+    tft.flush();
 }
 
 void loop()
 {
     Coord coord;
     Point32 p = viewPort.center;
-    bool moved = false;
-
-    sleepLoop();
+    //sleepLoop();
 
     if (mode == DEVMODE_NAV) {
         gpsGetPosition(coord);
@@ -156,5 +156,8 @@ void loop()
         delay(10);
     }
 
-   // return moved;
+    if (moved)
+        tft.flush();
+
+    moved = false;
 }

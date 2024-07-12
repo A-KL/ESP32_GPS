@@ -13,6 +13,8 @@ public:
 
     void init();
 
+    void flush();
+
 	void setRotation(int rotation);
 	
 	void invertDisplay(bool invert);

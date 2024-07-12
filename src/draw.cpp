@@ -45,7 +45,7 @@ void tft_header(Coord& pos)
 void tft_footer(const char* msg)
 {
     auto heigh = 20;
-    tft.fillRect(0, SCREEN_HEIGHT - heigh, SCREEN_WIDTH, heigh, CYAN);
+    tft.fillRect(0, SCREEN_HEIGHT - heigh, SCREEN_WIDTH, SCREEN_HEIGHT, CYAN);
     tft.setCursor(5, SCREEN_HEIGHT - 25, 2);
     tft.println(msg);
 }

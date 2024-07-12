@@ -94,8 +94,8 @@ void gpsInit()
 
 void gpsGetPosition(Coord& coord)
 {
-    coord.lat = 41.419769;
-    coord.lng = 2.103490;
+    coord.lat = 52.371388;
+    coord.lng = 4.830463;
 
     coord.altitude = static_cast<int16_t>(10);
     coord.direction = static_cast<int16_t>(15); // degrees

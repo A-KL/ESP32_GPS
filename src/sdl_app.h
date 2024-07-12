@@ -111,7 +111,6 @@ int main()
 	// auto start_time = std::chrono::high_resolution_clock::now();
 
     setup();
-	SDL_RenderPresent(_sdl);
 
     // auto end_time = std::chrono::high_resolution_clock::now();
 	// auto time = end_time - start_time;
@@ -124,9 +123,6 @@ int main()
 		SDL_PollEvent(&event);
 
 		loop();
-		// if () {
-         //SDL_RenderPresent(_sdl);
-		// }
 	} 
 	while (event.type != SDL_QUIT);
 
