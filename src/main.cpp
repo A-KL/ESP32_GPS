@@ -61,7 +61,7 @@ void setup()
     gpioInit();
     tftfOff();
 
-    //gpsInit();
+    gpsInit();
 
     digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
     digitalWrite(TFT_CS, HIGH); // TFT chip select
@@ -130,7 +130,7 @@ void loop()
             moved = true; // recenter
         }
         tft_header(coord);
-       //delay(200); // button debouncing
+        delay(200); // button debouncing
     }
 
     if (mode == DEVMODE_MOVE) {

@@ -125,7 +125,7 @@ int main()
 
 		loop();
 		// if () {
-        // 	SDL_RenderPresent(_sdl);
+         //SDL_RenderPresent(_sdl);
 		// }
 	} 
 	while (event.type != SDL_QUIT);

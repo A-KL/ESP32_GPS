@@ -52,14 +52,14 @@ void tft_footer(const char* msg)
 
 void tft_msg(const char* msg)
 {
-    tft.fillRect(0, 0, 240, 25, CYAN);
+    tft.fillRect(0, 0, SCREEN_WIDTH, 25, CYAN);
     tft.setCursor(5,5,2);
     tft.println(msg);
 }
 
 void header_msg(const char* msg)
 {
-    tft.fillRect(0, 0, 240, 25, YELLOWCLEAR);
+    tft.fillRect(0, 0, SCREEN_WIDTH, 25, YELLOWCLEAR);
     tft.setCursor(5,5,2);
     tft.print(msg);
 }

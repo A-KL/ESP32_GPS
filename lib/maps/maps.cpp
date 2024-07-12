@@ -242,12 +242,11 @@ bool get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCach
         int32_t block_y = (block_min_y >> MAPBLOCK_SIZE_BITS) & MAPFOLDER_MASK;
         int32_t folder_name_x = block_min_x >> (MAPFOLDER_SIZE_BITS + MAPBLOCK_SIZE_BITS);
         int32_t folder_name_y = block_min_y >> (MAPFOLDER_SIZE_BITS + MAPBLOCK_SIZE_BITS);
-        char folder_name[12];
-        snprintf( folder_name, 9, "%+04d%+04d", folder_name_x, folder_name_y); // force sign and 4 chars per number
 
         char file_name[100];
-        snprintf(file_name, sizeof(file_name), "%s/%d_%d.fmp", folder_name, block_x, block_y);
-        //String file_name = String("") + folder_name + "/" + block_x + "_" + block_y + ".fmp"; //  /maps/123_456/777_888
+        memset(file_name, 0, sizeof(file_name));
+        snprintf(file_name, sizeof(file_name), "%+04d%+04d/%d_%d.fmp", folder_name_x, folder_name_y, block_x, block_y);
+        log_i("Reading file: '%s'\n", file_name);
 
         // check if cache is full
         if (memCache.blocks.size() >= MAPBLOCKS_MAX)
@@ -264,7 +263,7 @@ bool get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCach
         auto stream = fileSystem->Open(file_name);
 
         if (!stream) {
-            log_e("Map file not found: %s/%d/%d.fmp\n", folder_name, block_x, block_y);
+            log_e("Map file not found: %s\n", file_name);
             return false;
         }
 

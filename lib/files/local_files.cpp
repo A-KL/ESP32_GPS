@@ -11,7 +11,14 @@ class LocalFileStream : public IReadStream {
             _stream = new std::ifstream(fileName);
         }
 
+        inline uint8_t IsOpen() {
+            return _stream->is_open();
+        }
+
         virtual int read() {
+            if (!_stream->is_open()) 
+                return -1;
+
             char buffer[1];
             _stream->read(buffer, 1);
             return *buffer;
@@ -25,7 +32,7 @@ class LocalFileStream : public IReadStream {
     private:
         std::ifstream* _stream;
 };
-
+// "../OSM_Extract/maps/netherlands-latest.osm/mymap/+008+104/3_12.fmp"
 class LocalFileStreamFactory : public IFileSystem {
     public:
         LocalFileStreamFactory(const char* root = NULL) : _root(root)
@@ -33,7 +40,12 @@ class LocalFileStreamFactory : public IFileSystem {
 
         inline virtual IReadStream* Open(const char* fileName) const {
             auto fullPath =  _root + "/" + fileName;
-            return new LocalFileStream(fullPath.c_str());
+            auto stream = new LocalFileStream(fullPath.c_str());
+            auto result = stream->IsOpen() ? stream : NULL;
+            if (!stream->IsOpen()) {
+                delete stream;
+            }
+            return result;
         }
     private:
         std::string _root;

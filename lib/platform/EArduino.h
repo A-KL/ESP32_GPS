@@ -18,7 +18,7 @@
 #ifndef CUSTOM_DELAY
 inline void delay(uint32_t msec)
 {
-    log_i("Delay for %dmsec\n", msec);
+    log_i("Delay for %d msec\n", msec);
 }
 #endif
 
