@@ -104,11 +104,11 @@ bool init_file_system()
         return false;
     }
 
-    if (!SD_MMC.begin()) {
+    if (!SD_MMC.begin("/")) {
         log_e("Card Mount Failed");
         return false;
     }
-    
+
     log_i("Card Mounted");
 
     uint8_t cardType = SD_MMC.cardType();

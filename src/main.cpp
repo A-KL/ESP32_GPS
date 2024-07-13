@@ -15,14 +15,14 @@
     #include <logs.h>
 #endif
 
-TFT_eSPI tft;
+TFT_eSPI tft(320, 240);
 MemCache memCache;
 std::vector<Coord> samples;
 
 double prev_lat = DEFAULT_LAT;
 double prev_lng = DEFAULT_LON;
 int zoom_level = PIXEL_SIZE_DEF; // zoom_level = 1 correspond aprox to 1 meter / pixel
-int mode = DEVMODE_NAV;// DEVMODE_MOVE;
+int mode = DEVMODE_MOVE; //DEVMODE_NAV
 bool moved = true;
 
 Coord map_center_coord(DEFAULT_LAT, DEFAULT_LON);
@@ -50,7 +50,7 @@ void gpioInit() {
 }
 
 void tftOn() {
-    digitalWrite(TFT_BLK_PIN, HIGH);
+    analogWrite(TFT_BLK_PIN, 50);
 }
 
 void tftfOff() {
@@ -79,10 +79,11 @@ void setup()
 
     //printFreeMem();
 
-    if (!init_file_system()) {
+    while (!init_file_system())
+    {
         tft.println("Error: SD Card Mount Failed!");
         log_e("Error: SD Card Mount Failed!");
-        stop();
+        delay(1000);
     }
 
     tft.println("Reading map...");
