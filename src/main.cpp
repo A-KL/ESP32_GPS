@@ -62,9 +62,8 @@ void setup()
     gpioInit();
     tftfOff();
 
-    Serial.begin(115200);
     // printFreeMem();
-    //gpsInit();
+    gpsInit();
 
     //digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
     digitalWrite(TFT_CS, HIGH); // TFT chip select

@@ -17,6 +17,9 @@ TFT_eSPI::TFT_eSPI()
     : _sdl(NULL), _cursorX(0), _cursorY(0), _textColor(0)
 {};
 
+TFT_eSPI::TFT_eSPI(uint16_t w, uint16_t h) : TFT_eSPI()
+{};
+
 void TFT_eSPI::setRender(SDL_Renderer* sdl)
 {
     _sdl = sdl;

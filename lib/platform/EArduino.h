@@ -38,6 +38,11 @@ inline char digitalRead(int pin)
 }
 #endif
 
+inline void analogWrite(int pin, int value)
+{
+    log_i("analogWrite on %d with %d\n", value);
+}
+
 #ifndef CUSTOM_DIGITAL_WRITE
 inline void digitalWrite(int pin, int value)
 {

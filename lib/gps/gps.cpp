@@ -15,9 +15,9 @@ HardwareSerial SerialGPS(1);
 
 void gpsInit()
 {
-    #ifdef ARDUINO_uPesy_WROVER
-    #else   
-        SerialGPS.begin(9600, SERIAL_8N1, GPS_RX, GPS_TX);
+    Serial.begin(115200);
+    #ifndef ARDUINO_uPesy_WROVER
+       // SerialGPS.begin(9600, SERIAL_8N1, GPS_RX, GPS_TX);
     #endif
 }
 
@@ -79,13 +79,13 @@ void gpsGetPosition(Coord& coord)
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-#include <nmeaparse/nmea.h>
+//#include <nmeaparse/nmea.h>
 
 using namespace std;
-using namespace nmea;
+// using namespace nmea;
 
-NMEAParser parser;
-GPSService gps(parser);
+// NMEAParser parser;
+// GPSService gps(parser);
 
 void gpsInit()
 {}

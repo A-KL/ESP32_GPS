@@ -9,6 +9,8 @@ class TFT_eSPI
 public:
     TFT_eSPI();
 
+    TFT_eSPI(uint16_t w, uint16_t h);
+
     void setRender(SDL_Renderer* sdl);
 
     void init();
