@@ -139,6 +139,7 @@ void loop()
         if( digitalRead( DOWN_BUTTON))  { p.y -= 40*zoom_level; moved = true; }
         if( digitalRead( LEFT_BUTTON))  { p.x -= 40*zoom_level; moved = true; }
         if( digitalRead( RIGHT_BUTTON)) { p.x += 40*zoom_level; moved = true; }
+        point_to_coord(p, coord);
     }
 
     if (mode == DEVMODE_ZOOM) {
@@ -153,7 +154,7 @@ void loop()
         auto res = get_map_blocks(fileSystem, viewPort.bbox, memCache);
         draw(viewPort, memCache, zoom_level, mode);
         tft_header(coord);
-        tft_footer(std::to_string(zoom_level).c_str());
+        tft_footer(zoom_level);
         delay(10);
     }
 

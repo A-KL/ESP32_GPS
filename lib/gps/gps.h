@@ -36,3 +36,6 @@ struct Coord {
 
 void gpsInit();
 void gpsGetPosition(Coord& coord);
+
+int coord_to_point(const Coord& coord, Point32& result);
+int point_to_coord(const Point32& point, Coord& result);

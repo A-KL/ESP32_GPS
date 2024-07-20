@@ -17,7 +17,7 @@ struct Coord;
 
 void tft_header(Coord& pos);
 
-void tft_footer(const char* msg);
+void tft_footer(int zoom);
 
 void tft_msg(const char* msg);
 

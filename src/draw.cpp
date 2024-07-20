@@ -35,19 +35,19 @@ void tft_header(Coord& pos)
 {
     tft.fillRect(0, 0, SCREEN_WIDTH, 25, YELLOWCLEAR);
     tft.setCursor(5,5,2);
-    tft.printf("%f %f  Sats: %d M: %d", pos.lng, pos.lat, pos.satellites, mode);
+    tft.printf("%f %f  SATELLITES: %d MODE: %d", pos.lng, pos.lat, pos.satellites, mode);
     // tft.print(pos.lng, 4);
     // tft.print(" "); tft.print(pos.lat, 4);
     // tft.print(" Sats: "); tft.print(pos.satellites);
     // tft.print(" M: "); tft.print(mode);
 }
 
-void tft_footer(const char* msg)
+void tft_footer(int zoom)
 {
     auto heigh = 20;
     tft.fillRect(0, SCREEN_HEIGHT - heigh, SCREEN_WIDTH, SCREEN_HEIGHT, CYAN);
     tft.setCursor(5, SCREEN_HEIGHT - 25, 2);
-    tft.println(msg);
+    tft.printf("ZOOM: %d/%d", zoom, MAX_ZOOM);
 }
 
 void tft_msg(const char* msg)
