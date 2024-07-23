@@ -107,6 +107,8 @@ void gpsGetPosition(Coord& coord)
     coord.second = 12;
 }
 
+#endif
+
 int coord_to_point(const Coord& coord, Point32& result) {
     result.x = lon2x(coord.lng);
     result.y = lat2y(coord.lat);
@@ -116,5 +118,3 @@ int coord_to_point(const Coord& coord, Point32& result) {
     result.lng = RAD2DEG(point.x / (float)EARTH_RADIUS);
     result.lat = RAD2DEG(point.y / (float)EARTH_RADIUS); //Fix this
  }
-
-#endif

@@ -3,26 +3,19 @@
 #include <Arduino.h>
 #include <TFT_eSPI.h>
 #include "FS.h"
-//#include "SD.h"
 #include "SD_MMC.h"
 #include "SPI.h"
 #include <StreamUtils.h>
 
 #include <draw.h>
-
 #include "../conf.h"
-
 #include "files.h"
-
-#ifdef SD_CS_PIN
-#define SD SD_MMC
-#endif
 
 class ArduinoReadFileStream : public IReadStream {
     public:
         ArduinoReadFileStream(const char* fileName) 
         {
-            _file = SD.open(fileName);
+            _file = SD_MMC.open(fileName);
            _stream  = new ReadBufferingStream {_file, 2000};
         }
 
@@ -96,25 +89,27 @@ class ArduinoFileStreamFactory : public IFileSystem {
 bool init_file_system() 
 {
     #ifdef SD_DAT1
-    if (!SD.setPins(SD_SCLK, SD_CMND, SD_DAT0, SD_DAT1, SD_DAT2, SD_DAT3)) {
-        log_e("Unable to set pins");
-        return false;
-    }
+    // if (!SD_MMC.setPins(SD_SCLK, SD_CMND, SD_DAT0, SD_DAT1, SD_DAT2, SD_DAT3)) {
+    //     log_e("Unable to set pins");
+    //     return false;
+    // }
     #else
-    if (!SD.setPins(SD_SCLK_PIN, SD_MOSI_PIN, SD_MISO_PIN)) {
+    if (!SD_MMC.setPins(SD_SCLK_PIN, SD_MOSI_PIN, SD_MISO_PIN)) {
         log_e("Unable to set pins");
         return false;
     }
     #endif
 
-    if (!SD.begin("/", true)) {
+    log_i("Mounting SD MMC");
+
+    if (!SD_MMC.begin("/sdcard", true)) {
         log_e("Card Mount Failed");
         return false;
     }
 
     log_i("Card Mounted");
 
-    uint8_t cardType = SD.cardType();
+    uint8_t cardType = SD_MMC.cardType();
 
     if (cardType == CARD_NONE) {
         log_e("No SD card attached");
@@ -133,8 +128,8 @@ bool init_file_system()
         log_i("UNKNOWN");
     }
     
-    uint64_t cardSize = SD.cardSize() / (1024 * 1024);
-    log_i("SD Card Size: %lluMB\ninitialisation done.\n", cardSize);
+    uint64_t cardSize = SD_MMC.cardSize() / 1024 / 1024;
+    log_i("SD Card Size: %dMB\ninitialisation done.\n", cardSize);
 
     return true;
 }

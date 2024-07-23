@@ -15,7 +15,7 @@
     #include <logs.h>
 #endif
 
-TFT_eSPI tft(320, 240);
+TFT_eSPI tft; //(320, 240);
 MemCache memCache;
 std::vector<Coord> samples;
 
@@ -47,6 +47,8 @@ void gpioInit() {
     //pinMode( MENU_BUTTON, INPUT_PULLUP);
     pinMode( TFT_BLK_PIN, OUTPUT);
     // pinMode( GPS_CE, OUTPUT);
+    pinMode(PWR_EN_PIN, OUTPUT);
+    digitalWrite(PWR_EN_PIN, HIGH);
 }
 
 void tftOn() {
@@ -139,7 +141,7 @@ void loop()
         if( digitalRead( DOWN_BUTTON))  { p.y -= 40*zoom_level; moved = true; }
         if( digitalRead( LEFT_BUTTON))  { p.x -= 40*zoom_level; moved = true; }
         if( digitalRead( RIGHT_BUTTON)) { p.x += 40*zoom_level; moved = true; }
-        point_to_coord(p, coord);
+        // point_to_coord(p, coord);
     }
 
     if (mode == DEVMODE_ZOOM) {
