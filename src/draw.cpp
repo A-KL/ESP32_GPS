@@ -193,7 +193,7 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode)
             RED);
     } else {
         tft.fillCircle(
-            SCREEN_WIDTH/2 - 4, SCREEN_HEIGHT/2 + 5, 5, RED);
+            SCREEN_WIDTH/2 - 4, SCREEN_HEIGHT/2 + 5, 3, RED);
     }
 
     log_d("Draw done! %i\n", millis());

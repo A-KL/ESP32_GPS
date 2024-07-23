@@ -160,8 +160,8 @@ void loop()
         delay(10);
     }
 
-    if (moved)
-        tft.flush();
+    // if (moved)
+    //     tft.flush();
 
     moved = false;
 }
