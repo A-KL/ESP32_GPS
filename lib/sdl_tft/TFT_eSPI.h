@@ -11,6 +11,10 @@ public:
 
     TFT_eSPI(uint16_t w, uint16_t h);
 
+    int16_t width();
+
+    int16_t height();
+
     void setRender(SDL_Renderer* sdl);
 
     void init();
@@ -52,6 +56,7 @@ public:
 private:
     SDL_Renderer* _sdl;
     uint16_t _cursorX, _cursorY;
+    uint16_t _w, _h;
     uint16_t _textColor;
 
     int SDL_SetRenderDrawColor565(SDL_Renderer* render, uint16_t color565);

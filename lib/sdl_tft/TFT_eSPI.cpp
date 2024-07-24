@@ -14,11 +14,21 @@
 
 
 TFT_eSPI::TFT_eSPI() 
-    : _sdl(NULL), _cursorX(0), _cursorY(0), _textColor(0)
+    : _sdl(NULL), _cursorX(0), _cursorY(0), _textColor(0), _w(TFT_WIDTH), _h(TFT_HEIGHT)
 {};
 
-TFT_eSPI::TFT_eSPI(uint16_t w, uint16_t h) : TFT_eSPI()
+TFT_eSPI::TFT_eSPI(uint16_t w, uint16_t h) : _sdl(NULL), _cursorX(0), _cursorY(0), _textColor(0), _w(w), _h(h)
 {};
+
+int16_t TFT_eSPI::width()
+{
+    return _w;
+}
+
+int16_t TFT_eSPI::height()
+{
+    return _h;
+}
 
 void TFT_eSPI::setRender(SDL_Renderer* sdl)
 {

@@ -3,7 +3,9 @@
 #ifdef ARDUINO
 
 #include <Arduino.h>
+#include <SPI.h>
 #include <TFT_eSPI.h>
+// #include <xpt2046.h>
 
 #include <colors.h>
 #include <geometry.h>
@@ -12,6 +14,8 @@
 #include <maps.h>
 
 #include "../lib/conf.h"
+
+// XPT2046 touch = XPT2046(SPI, TOUCHSCREEN_CS_PIN, TOUCHSCREEN_IRQ_PIN);
 
 void sleepInit(){
     // digitalWrite( GPS_CE, HIGH); // GPS low power mode disabled

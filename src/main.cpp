@@ -47,8 +47,6 @@ void gpioInit() {
     //pinMode( MENU_BUTTON, INPUT_PULLUP);
     pinMode( TFT_BLK_PIN, OUTPUT);
     // pinMode( GPS_CE, OUTPUT);
-    pinMode(PWR_EN_PIN, OUTPUT);
-    digitalWrite(PWR_EN_PIN, HIGH);
 }
 
 void tftOn() {
@@ -61,6 +59,9 @@ void tftfOff() {
 
 void setup()
 {
+    pinMode(PWR_EN_PIN, OUTPUT);
+    digitalWrite(PWR_EN_PIN, HIGH);
+
     gpioInit();
     tftfOff();
 
@@ -104,7 +105,7 @@ void setup()
     // printFreeMem();
 
     // sleepInit();
-    //tft.flush();
+   tft.flush();
 }
 
 void loop()
@@ -160,8 +161,8 @@ void loop()
         delay(10);
     }
 
-    // if (moved)
-    //     tft.flush();
-
-    moved = false;
+    if (moved) {
+        tft.flush();
+        moved = false;
+    }
 }
