@@ -1,15 +1,27 @@
+#pragma once
 
-#ifndef gps_h_
-#define gps_h_
-#include <TinyGPS++.h>
-#include <math.h>
-#include <stdint.h>
-#include <HardwareSerial.h>
-#include "graphics.h"
+#include <geometry.h>
+
+#ifndef M_PI
+#define M_PI    3.14159265358979323846264338327950288   /**< pi */
+#endif
+
+#define DEG2RAD(a)   ((a) / (180 / M_PI))
+#define RAD2DEG(a)   ((a) * (180 / M_PI))
+#define EARTH_RADIUS 6378137
+
+inline double lat2y(double lat) { return log(tan( DEG2RAD(lat) / 2 + M_PI/4 )) * EARTH_RADIUS; }
+inline double lon2x(double lon) { return          DEG2RAD(lon)                 * EARTH_RADIUS; }
 
 /// @brief Point in geografic (lat,lon) coordinates and other gps data
 struct Coord {
-    Point32 getPoint32();
+    Coord(): Coord(0, 0)
+    {}
+    Coord(double _lat, double _lng): lat(_lat), lng(_lng)
+    {}
+    Point32 getPoint32() {
+        return Point32(lon2x(lng), lat2y(lat));
+    }
     double lat = 0;
     double lng = 0;
     int16_t altitude = 0;
@@ -22,7 +34,8 @@ struct Coord {
     bool isUpdated = false;
 };
 
+void gpsInit();
+void gpsGetPosition(Coord& coord);
 
-Coord getPosition(HardwareSerial& serialGPS);
-
-#endif
+int coord_to_point(const Coord& coord, Point32& result);
+int point_to_coord(const Point32& point, Coord& result);

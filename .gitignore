@@ -4,3 +4,6 @@
 .vscode/launch.json
 .vscode/ipch
 src/env.h
+.vscode/
+.vs/
+ESP32_GPS/x64/
