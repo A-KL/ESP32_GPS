@@ -64,21 +64,30 @@ void parse_coords(IReadStream& file, std::vector<Point16>& points)
     char str[30];
     assert(points.size() == 0);
     Point16 point;
-    while( true){
+    while(true)
+    {
         try{
-            parse_str_until( file, ',', str);
-            if( str[0] == '\0') break;
-            point.x = (int16_t )std::stoi( str);
-            parse_str_until( file, ';', str);
-            assert( str[0] != '\0');
-            point.y = (int16_t )std::stoi( str);
+            parse_str_until(file, ',', str);
+            if (str[0] == '\0') break;
+            // if (atoi(str) < 0)
+            // {
+            //     log_e("X: %d Error: %s\n",point.x, str);
+            // }
+            point.x = (int16_t) std::stoi(str);
+            parse_str_until(file, ';', str);
+            assert(str[0] != '\0');
+            // if (atoi(str) < 0)
+            // {
+            //    log_e("Y: %d Error: %s\n",point.x, str);
+            // }
+            point.y = (int16_t)std::stoi(str);
             // log_d("point: %i %i", point.x, point.y);
-        } catch( std::invalid_argument){
+        } catch(std::invalid_argument){
             log_e("parse_coords invalid_argument: %s\n", str);
-        } catch( std::out_of_range){
+        } catch(const std::out_of_range &error){
             log_e("parse_coords out_of_range: %s\n", str);
         }
-        points.push_back( point);
+        points.push_back(point);
     }
     // points.shrink_to_fit();
 }
@@ -138,9 +147,10 @@ void read_map_block(IReadStream& file, MapBlock* result)
             log_e("coords error tag. Line %i : %s\n", line, str);
             while(true);
         }
-        parse_coords( file, polygon.points);
+        parse_coords(file, polygon.points);
         line++;
-        result->polygons.push_back( polygon);
+        result->polygons.push_back(polygon);
+       //log_d("Free HEAP RAM: \t%d\t%d\n", esp_get_free_heap_size(), esp_spiram_get_size());
         total_points += polygon.points.size();
         count--;
     }

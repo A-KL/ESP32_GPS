@@ -1,7 +1,7 @@
 #pragma once
 
-#define SCREEN_WIDTH TFT_WIDTH //240
-#define SCREEN_HEIGHT TFT_HEIGHT //320
+#define SCREEN_WIDTH TFT_HEIGHT  //240
+#define SCREEN_HEIGHT TFT_WIDTH//320
 
 #define PIXEL_SIZE_DEF 2    // in meters
 #define MAX_ZOOM 7

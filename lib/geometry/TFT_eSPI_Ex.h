@@ -31,10 +31,6 @@ void fillPolygon(TFT_eSPI& tft, const Polygon& p)
 
     int16_t nodeX[p.points.size()];
 
-    //log_d("fillPolygon: max_y, min_y = (%d, %d) points: %d", maxy, miny, p.points.size());
-
-    //log_i("Polygon: max %d, min %d", p.bbox.max, p.bbox.min);
-
     //  Loop through the rows of the image.
     int16_t nodes, i , swap;
     for (auto pixelY=miny; pixelY <= maxy; pixelY++) {  //  Build a list of nodes.        
@@ -65,7 +61,6 @@ void fillPolygon(TFT_eSPI& tft, const Polygon& p)
             if( nodeX[i+1] < 0 ) continue;
             if (nodeX[i] < 0 ) nodeX[i] = 0;
             if (nodeX[i+1] > SCREEN_WIDTH) nodeX[i+1] = SCREEN_WIDTH;
-            //log_d("drawLine (%d, %d) to (%d, %d) with %d", nodeX[i], SCREEN_HEIGHT - pixelY, nodeX[i+1], SCREEN_HEIGHT - pixelY, p.color);
             tft.drawLine(nodeX[i], SCREEN_HEIGHT - pixelY, nodeX[i+1], SCREEN_HEIGHT - pixelY, p.color);
         }
     }

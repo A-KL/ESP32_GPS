@@ -70,6 +70,24 @@ inline int16_t toScreenCoord(const int32_t pxy, const int32_t screen_center_xy, 
     return round((double)(pxy - screen_center_xy) / zoom_level) + (double)SCREEN_WIDTH / 2.0;
 }
 
+inline void toScreenPolygon(const Polygon source, const Point16& center, const int zoom, Polygon& result)
+{
+    result.color = source.color;
+
+    result.bbox.min.x = toScreenCoord( source.bbox.min.x, center.x, zoom);
+    result.bbox.min.y = toScreenCoord( source.bbox.min.y, center.y, zoom);
+    result.bbox.max.x = toScreenCoord( source.bbox.max.x, center.x, zoom);
+    result.bbox.max.y = toScreenCoord( source.bbox.max.y, center.y, zoom);
+
+    result.points.clear();
+
+    for (auto p : source.points) {
+        result.points.push_back(Point16(
+            toScreenCoord(p.x, center.x, zoom),
+            toScreenCoord(p.y, center.y, zoom)));
+    }
+}
+
 void drawMe(int mode)
 {
     if (mode == DEVMODE_NAV) {
@@ -91,6 +109,7 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode)
 
     Polygon new_polygon;
     uint32_t total_time = millis();
+
     log_d("Draw start %i\n", total_time);
 
     int16_t p1x, p1y, p2x, p2y;
@@ -105,9 +124,11 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode)
         BBox screen_bbox_mc = viewPort.bbox - mblock->offset;  // screen boundaries with features coordinates
         
         ////// Polygons 
-        for (Polygon polygon : mblock->polygons){
+        for (Polygon polygon : mblock->polygons)
+        {
             if (zoom_level > polygon.maxzoom) continue;
-            if (!polygon.bbox.intersects( screen_bbox_mc)) continue;
+            if (!polygon.bbox.intersects(screen_bbox_mc)) continue;
+
             new_polygon.color = polygon.color;
             new_polygon.bbox.min.x = toScreenCoord( polygon.bbox.min.x, screen_center_mc.x, zoom_level);
             new_polygon.bbox.min.y = toScreenCoord( polygon.bbox.min.y, screen_center_mc.y, zoom_level);
@@ -115,14 +136,15 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode)
             new_polygon.bbox.max.y = toScreenCoord( polygon.bbox.max.y, screen_center_mc.y, zoom_level);
             
             new_polygon.points.clear();
-            for( Point16 p : polygon.points){ // TODO: move to fill_polygon
+            for (Point16 p : polygon.points){ // TODO: move to fill_polygon
                 new_polygon.points.push_back( Point16(
                     toScreenCoord( p.x, screen_center_mc.x, zoom_level),
                     toScreenCoord( p.y, screen_center_mc.y, zoom_level)));
             }
+
             fillPolygon(tft, new_polygon);
-            
         }
+
         log_d("Block polygons done %i ms\n", millis()-block_time);
         block_time = millis();
         
@@ -138,10 +160,10 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode)
                 p2x = toScreenCoord( line.points[i+1].x, screen_center_mc.x, zoom_level); 
                 p2y = toScreenCoord( line.points[i+1].y, screen_center_mc.y, zoom_level);
 
-                log_d("drawWideLine (%d, %d) to (%d, %d) with %d",
-                    p1x, SCREEN_HEIGHT - p1y,
-                    p2x, SCREEN_HEIGHT - p2y,
-                    line.width/zoom_level ?: 1, line.color, line.color);
+                // log_d("drawWideLine (%d, %d) to (%d, %d) with color %2x\n",
+                //     p1x, SCREEN_HEIGHT - p1y,
+                //     p2x, SCREEN_HEIGHT - p2y,
+                //     line.width/zoom_level ?: 1, line.color, line.color);
             
                 tft.drawWideLine(
                     p1x, SCREEN_HEIGHT - p1y,

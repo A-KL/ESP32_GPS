@@ -15,15 +15,15 @@
     #include <logs.h>
 #endif
 
-TFT_eSPI tft; //(320, 240);
+TFT_eSPI tft;
 MemCache memCache;
 std::vector<Coord> samples;
 
 double prev_lat = DEFAULT_LAT;
 double prev_lng = DEFAULT_LON;
 int zoom_level = PIXEL_SIZE_DEF; // zoom_level = 1 correspond aprox to 1 meter / pixel
-int mode = DEVMODE_MOVE; //DEVMODE_NAV
-bool moved = true;
+int mode = DEVMODE_NAV;//DEVMODE_MOVE; //DEVMODE_NAV
+bool moved = false;
 
 Coord map_center_coord(DEFAULT_LAT, DEFAULT_LON);
 Point32 map_center_point = map_center_coord.getPoint32();
@@ -33,8 +33,9 @@ IFileSystem* fileSystem = get_file_system(MAPS_LOCATION);
 void printFreeMem() {
     log_i("FreeHeap: %i\n", esp_get_free_heap_size());
     log_i("Heap minimum_free_heap_size: %i\n", esp_get_minimum_free_heap_size());
-    log_i("Heap largest_free_block: %i\n", heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
-    log_i("Task watermark: %i\n", uxTaskGetStackHighWaterMark(NULL));
+   // log_i("RAM esp_spiram_get_size: %i\n", esp_spiram_get_size());
+    // log_i("Heap largest_free_block: %i\n", heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
+    // log_i("Task watermark: %i\n", uxTaskGetStackHighWaterMark(NULL));
 }
 
 void gpioInit() {
@@ -65,7 +66,7 @@ void setup()
     gpioInit();
     tftfOff();
 
-    // printFreeMem();
+    //printFreeMem();
     gpsInit();
 
     //digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
@@ -79,7 +80,7 @@ void setup()
     tft.println("Initializing...");
     tftOn();
 
-    //printFreeMem();
+   // printFreeMem();
 
     while (!init_file_system())
     {
@@ -103,13 +104,13 @@ void setup()
 
     // stats(viewPort, mmap);
     // printFreeMem();
-
     // sleepInit();
-   tft.flush();
+
+    // tft.flush();
 }
 
 void loop()
-{    
+{   
     Coord coord;
     Point32 p = viewPort.center;
     //sleepLoop();
