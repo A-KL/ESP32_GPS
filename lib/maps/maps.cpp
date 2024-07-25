@@ -11,7 +11,6 @@
 #include <stdexcept>
 #include <files.h>
 
-#include "../conf.h"
 #include "maps.h"
 
 // @brief Returns the int16 or 0 if empty
@@ -69,17 +68,9 @@ void parse_coords(IReadStream& file, std::vector<Point16>& points)
         try{
             parse_str_until(file, ',', str);
             if (str[0] == '\0') break;
-            // if (atoi(str) < 0)
-            // {
-            //     log_e("X: %d Error: %s\n",point.x, str);
-            // }
             point.x = (int16_t) std::stoi(str);
             parse_str_until(file, ';', str);
             assert(str[0] != '\0');
-            // if (atoi(str) < 0)
-            // {
-            //    log_e("Y: %d Error: %s\n",point.x, str);
-            // }
             point.y = (int16_t)std::stoi(str);
             // log_d("point: %i %i", point.x, point.y);
         } catch(std::invalid_argument){
@@ -92,7 +83,7 @@ void parse_coords(IReadStream& file, std::vector<Point16>& points)
     // points.shrink_to_fit();
 }
 
-void read_map_block(IReadStream& file, MapBlock* result)
+void read_map_block(IReadStream& file, MapBlock* result, int max_zoom = 7)
 { 
     char c;
     char str[30];
@@ -124,7 +115,7 @@ void read_map_block(IReadStream& file, MapBlock* result)
         //log_d("polygon.color: %i\n", polygon.color);
         line++;
         parse_str_until( file, '\n', str); // maxzoom
-        polygon.maxzoom = str[0] ? (uint8_t )std::stoi( str) : MAX_ZOOM;
+        polygon.maxzoom = str[0] ? (uint8_t )std::stoi( str) : max_zoom;
         // log_d("polygon.maxzoom: %i", polygon.maxzoom);
         line++;
 
@@ -150,7 +141,6 @@ void read_map_block(IReadStream& file, MapBlock* result)
         parse_coords(file, polygon.points);
         line++;
         result->polygons.push_back(polygon);
-       //log_d("Free HEAP RAM: \t%d\t%d\n", esp_get_free_heap_size(), esp_spiram_get_size());
         total_points += polygon.points.size();
         count--;
     }
@@ -178,7 +168,7 @@ void read_map_block(IReadStream& file, MapBlock* result)
         polyline.width = str[0] ? (uint8_t )std::stoi( str) : 1;
         line++;
         parse_str_until( file, '\n', str); // maxzoom
-        polyline.maxzoom = str[0] ? (uint8_t )std::stoi( str) : MAX_ZOOM;
+        polyline.maxzoom = str[0] ? (uint8_t )std::stoi( str) : max_zoom;
         line++;
 
         parse_str_until( file, ':', str);
@@ -205,11 +195,6 @@ void read_map_block(IReadStream& file, MapBlock* result)
         }
         parse_coords( file, polyline.points);
         line++;
-        // if( line > 4050 && file_name == "/mymap/3_77/6_9"){
-        //     for( Point16 p: polyline.points){
-        //         log_d("p.x, p.y %i %i", p.x, p.y);
-        //     }
-        // }
         result->polylines.push_back(polyline);
         total_points += polyline.points.size();
         count--;

@@ -3,24 +3,14 @@
 struct MemCache;
 struct ViewPort;
 struct Coord;
+class TFT_eSPI;
 
-// class MapViewport
-// {
-//     public:
+void tft_header(TFT_eSPI& tft, Coord& pos, int mode);
 
-//     private:
-//         inline int16_t toScreenCoord(const int32_t pxy, const int32_t screen_center_xy, int zoom_level) // work with primitives for performance
-//         {
-//             return round((double)(pxy - screen_center_xy) / zoom_level) + (double)SCREEN_WIDTH / 2.0;
-//         }
-// }
+void tft_footer(TFT_eSPI& tft, int zoom);
 
-void tft_header(Coord& pos);
+void tft_msg(TFT_eSPI& tft, const char* msg);
 
-void tft_footer(int zoom);
+void header_msg(TFT_eSPI& tft, const char* msg);
 
-void tft_msg(const char* msg);
-
-void header_msg(const char* msg);
-
-void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode);
+void draw(TFT_eSPI& tft, ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode);

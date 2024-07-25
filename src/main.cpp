@@ -23,17 +23,17 @@ double prev_lat = DEFAULT_LAT;
 double prev_lng = DEFAULT_LON;
 int zoom_level = PIXEL_SIZE_DEF; // zoom_level = 1 correspond aprox to 1 meter / pixel
 int mode = DEVMODE_NAV;//DEVMODE_MOVE; //DEVMODE_NAV
-bool moved = false;
+bool moved = true;
 
 Coord map_center_coord(DEFAULT_LAT, DEFAULT_LON);
 Point32 map_center_point = map_center_coord.getPoint32();
-ViewPort viewPort(map_center_point, zoom_level, SCREEN_WIDTH, SCREEN_HEIGHT);
+ViewPort viewPort(map_center_point, zoom_level, tft.width(), tft.height());
 IFileSystem* fileSystem = get_file_system(MAPS_LOCATION);
 
 void printFreeMem() {
     log_i("FreeHeap: %i\n", esp_get_free_heap_size());
     log_i("Heap minimum_free_heap_size: %i\n", esp_get_minimum_free_heap_size());
-   // log_i("RAM esp_spiram_get_size: %i\n", esp_spiram_get_size());
+    log_i("RAM esp_spiram_get_size: %i\n", esp_spiram_get_size());
     // log_i("Heap largest_free_block: %i\n", heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
     // log_i("Task watermark: %i\n", uxTaskGetStackHighWaterMark(NULL));
 }
@@ -51,7 +51,7 @@ void gpioInit() {
 }
 
 void tftOn() {
-    analogWrite(TFT_BLK_PIN, 50);
+    analogWrite(TFT_BLK_PIN, 80);
 }
 
 void tftfOff() {
@@ -69,7 +69,7 @@ void setup()
     //printFreeMem();
     gpsInit();
 
-    //digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
+    digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
     digitalWrite(TFT_CS, HIGH); // TFT chip select
 
     tft.init();
@@ -98,15 +98,15 @@ void setup()
         stop();
     }
     
-    draw(viewPort, memCache, zoom_level, mode);
+    draw(tft, viewPort, memCache, zoom_level, mode);
 
-    tft_msg("Waiting for satellites...");
+    tft_msg(tft, "Waiting for satellites...");
 
     // stats(viewPort, mmap);
     // printFreeMem();
     // sleepInit();
 
-    // tft.flush();
+    tft.flush();
 }
 
 void loop()
@@ -134,7 +134,7 @@ void loop()
             mode = DEVMODE_NAV;
             moved = true; // recenter
         }
-        tft_header(coord);
+        tft_header(tft, coord, mode);
         delay(200); // button debouncing
     }
 
@@ -156,9 +156,9 @@ void loop()
     if (moved) {
         viewPort.setCenter(p);
         auto res = get_map_blocks(fileSystem, viewPort.bbox, memCache);
-        draw(viewPort, memCache, zoom_level, mode);
-        tft_header(coord);
-        tft_footer(zoom_level);
+        draw(tft, viewPort, memCache, zoom_level, mode);
+        tft_header(tft, coord, mode);
+        tft_footer(tft, zoom_level);
         delay(10);
     }
 

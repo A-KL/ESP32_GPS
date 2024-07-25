@@ -18,78 +18,117 @@
 
 #include "draw.h"
 
-extern TFT_eSPI tft;
-extern int mode;
-
 // class MapViewport
 // {
 //     public:
+//         MapViewport(TFT_eSPI& tft) : _tft(tft)
+//         {}
+
+//         void show_gps_info(int mode, Coord& pos) {
+//             _tft.fillRect(0, 0, _tft.width(), 25, YELLOWCLEAR);
+//             _tft.setCursor(5,5,2);
+//             _tft.printf("%f %f  SATELLITES: %d MODE: %d", pos.lng, pos.lat, pos.satellites, mode);
+//         }
+
+//         void show_footer(int zoom)
+//         {
+//             auto heigh = 20;
+//             auto SCREEN_WIDTH = _tft.width();
+//             auto SCREEN_HEIGHT = _tft.height();
+
+//             _tft.fillRect(0, SCREEN_HEIGHT - heigh, SCREEN_WIDTH, SCREEN_HEIGHT, CYAN);
+//             _tft.setCursor(5, SCREEN_HEIGHT - 25, 2);
+//             _tft.printf("ZOOM: %d/%d", zoom, MAX_ZOOM);
+//         }
+
+//         void show_header(const char* msg)
+//         {
+//             _tft.fillRect(0, 0, _tft.width(), 25, YELLOWCLEAR);
+//             _tft.setCursor(5,5,2);
+//             _tft.print(msg);
+//         }
+
+//         void show_message(const char* msg)
+//         {
+//             _tft.fillRect(0, 0, _tft.width(), 25, CYAN);
+//             _tft.setCursor(5,5,2);
+//             _tft.println(msg);
+//         }
+
+//         void update(ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode)
+//         {
+
+//         }
 
 //     private:
-//         inline int16_t toScreenCoord(const int32_t pxy, const int32_t screen_center_xy, int zoom_level) // work with primitives for performance
-//         {
-//             return round((double)(pxy - screen_center_xy) / zoom_level) + (double)SCREEN_WIDTH / 2.0;
-//         }
-// }
+//         TFT_eSPI& _tft;
 
-void tft_header(Coord& pos)
+//         inline int16_t toScreenCoord(const int32_t pxy, const int32_t screen_center_xy, int zoom_level, double screen_width) // work with primitives for performance
+//         {
+//             return round((double)(pxy - screen_center_xy) / zoom_level) + screen_width / 2.0;
+//         }
+// };
+
+void tft_header(TFT_eSPI& tft, Coord& pos, int mode)
 {
-    tft.fillRect(0, 0, SCREEN_WIDTH, 25, YELLOWCLEAR);
+    tft.fillRect(0, 0, tft.width(), 25, YELLOWCLEAR);
     tft.setCursor(5,5,2);
-    tft.printf("%f %f  SATELLITES: %d MODE: %d", pos.lng, pos.lat, pos.satellites, mode);
-    // tft.print(pos.lng, 4);
-    // tft.print(" "); tft.print(pos.lat, 4);
-    // tft.print(" Sats: "); tft.print(pos.satellites);
-    // tft.print(" M: "); tft.print(mode);
+    tft.printf("%f %f SAT:%d MODE:%d", pos.lng, pos.lat, pos.satellites, mode);
 }
 
-void tft_footer(int zoom)
+void tft_footer(TFT_eSPI& tft, int zoom)
 {
     auto heigh = 20;
+    auto SCREEN_WIDTH = tft.width();
+    auto SCREEN_HEIGHT = tft.height();
+
     tft.fillRect(0, SCREEN_HEIGHT - heigh, SCREEN_WIDTH, SCREEN_HEIGHT, CYAN);
     tft.setCursor(5, SCREEN_HEIGHT - 25, 2);
     tft.printf("ZOOM: %d/%d", zoom, MAX_ZOOM);
 }
 
-void tft_msg(const char* msg)
+void tft_msg(TFT_eSPI& tft, const char* msg)
 {
-    tft.fillRect(0, 0, SCREEN_WIDTH, 25, CYAN);
+    tft.fillRect(0, 0, tft.width(), 25, CYAN);
     tft.setCursor(5,5,2);
     tft.println(msg);
 }
 
-void header_msg(const char* msg)
+void header_msg(TFT_eSPI& tft, const char* msg)
 {
-    tft.fillRect(0, 0, SCREEN_WIDTH, 25, YELLOWCLEAR);
+    tft.fillRect(0, 0, tft.width(), 25, YELLOWCLEAR);
     tft.setCursor(5,5,2);
     tft.print(msg);
 }
 
-inline int16_t toScreenCoord(const int32_t pxy, const int32_t screen_center_xy, int zoom_level) // work with primitives for performance
+inline int16_t toScreenCoord(const double screen_width, const int32_t pxy, const int32_t screen_center_xy, int zoom_level) // work with primitives for performance
 {
-    return round((double)(pxy - screen_center_xy) / zoom_level) + (double)SCREEN_WIDTH / 2.0;
+    return round((double)(pxy - screen_center_xy) / zoom_level) + screen_width / 2.0;
 }
 
-inline void toScreenPolygon(const Polygon source, const Point16& center, const int zoom, Polygon& result)
+inline void toScreenPolygon(const Polygon source, const Point16& center, const int zoom, const double screen_width, Polygon& result)
 {
     result.color = source.color;
 
-    result.bbox.min.x = toScreenCoord( source.bbox.min.x, center.x, zoom);
-    result.bbox.min.y = toScreenCoord( source.bbox.min.y, center.y, zoom);
-    result.bbox.max.x = toScreenCoord( source.bbox.max.x, center.x, zoom);
-    result.bbox.max.y = toScreenCoord( source.bbox.max.y, center.y, zoom);
+    result.bbox.min.x = toScreenCoord(screen_width, source.bbox.min.x, center.x, zoom);
+    result.bbox.min.y = toScreenCoord(screen_width, source.bbox.min.y, center.y, zoom);
+    result.bbox.max.x = toScreenCoord(screen_width, source.bbox.max.x, center.x, zoom);
+    result.bbox.max.y = toScreenCoord(screen_width, source.bbox.max.y, center.y, zoom);
 
     result.points.clear();
 
     for (auto p : source.points) {
         result.points.push_back(Point16(
-            toScreenCoord(p.x, center.x, zoom),
-            toScreenCoord(p.y, center.y, zoom)));
+            toScreenCoord(screen_width, p.x, center.x, zoom),
+            toScreenCoord(screen_width, p.y, center.y, zoom)));
     }
 }
 
-void drawMe(int mode)
+void drawMe(TFT_eSPI& tft, int mode)
 {
+    auto SCREEN_WIDTH = tft.width();
+    auto SCREEN_HEIGHT = tft.height();
+
     if (mode == DEVMODE_NAV) {
         // TODO: paint only in NAV mode
         tft.fillTriangle(
@@ -103,8 +142,11 @@ void drawMe(int mode)
     }
 }
 
-void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode)
+void draw(TFT_eSPI& tft, ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode)
 {
+    auto SCREEN_WIDTH = tft.width();
+    auto SCREEN_HEIGHT = tft.height();
+
     tft.fillScreen(BACKGROUND_COLOR);
 
     Polygon new_polygon;
@@ -130,16 +172,16 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode)
             if (!polygon.bbox.intersects(screen_bbox_mc)) continue;
 
             new_polygon.color = polygon.color;
-            new_polygon.bbox.min.x = toScreenCoord( polygon.bbox.min.x, screen_center_mc.x, zoom_level);
-            new_polygon.bbox.min.y = toScreenCoord( polygon.bbox.min.y, screen_center_mc.y, zoom_level);
-            new_polygon.bbox.max.x = toScreenCoord( polygon.bbox.max.x, screen_center_mc.x, zoom_level);
-            new_polygon.bbox.max.y = toScreenCoord( polygon.bbox.max.y, screen_center_mc.y, zoom_level);
+            new_polygon.bbox.min.x = toScreenCoord(SCREEN_WIDTH, polygon.bbox.min.x, screen_center_mc.x, zoom_level);
+            new_polygon.bbox.min.y = toScreenCoord(SCREEN_WIDTH, polygon.bbox.min.y, screen_center_mc.y, zoom_level);
+            new_polygon.bbox.max.x = toScreenCoord(SCREEN_WIDTH, polygon.bbox.max.x, screen_center_mc.x, zoom_level);
+            new_polygon.bbox.max.y = toScreenCoord(SCREEN_WIDTH, polygon.bbox.max.y, screen_center_mc.y, zoom_level);
             
             new_polygon.points.clear();
             for (Point16 p : polygon.points){ // TODO: move to fill_polygon
                 new_polygon.points.push_back( Point16(
-                    toScreenCoord( p.x, screen_center_mc.x, zoom_level),
-                    toScreenCoord( p.y, screen_center_mc.y, zoom_level)));
+                    toScreenCoord(SCREEN_WIDTH, p.x, screen_center_mc.x, zoom_level),
+                    toScreenCoord(SCREEN_WIDTH, p.y, screen_center_mc.y, zoom_level)));
             }
 
             fillPolygon(tft, new_polygon);
@@ -155,10 +197,10 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode)
 
             p1x = -1;
             for( int i=0; i < line.points.size() - 1; i++) {    //TODO optimize
-                p1x = toScreenCoord( line.points[i].x, screen_center_mc.x, zoom_level); 
-                p1y = toScreenCoord( line.points[i].y, screen_center_mc.y, zoom_level); 
-                p2x = toScreenCoord( line.points[i+1].x, screen_center_mc.x, zoom_level); 
-                p2y = toScreenCoord( line.points[i+1].y, screen_center_mc.y, zoom_level);
+                p1x = toScreenCoord(SCREEN_WIDTH, line.points[i].x, screen_center_mc.x, zoom_level); 
+                p1y = toScreenCoord(SCREEN_WIDTH, line.points[i].y, screen_center_mc.y, zoom_level); 
+                p2x = toScreenCoord(SCREEN_WIDTH, line.points[i+1].x, screen_center_mc.x, zoom_level); 
+                p2y = toScreenCoord(SCREEN_WIDTH, line.points[i+1].y, screen_center_mc.y, zoom_level);
 
                 // log_d("drawWideLine (%d, %d) to (%d, %d) with color %2x\n",
                 //     p1x, SCREEN_HEIGHT - p1y,
@@ -176,7 +218,7 @@ void draw(ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode)
 
     log_d("Total %i ms\n", millis()-total_time);
 
-    drawMe(mode);
+    drawMe(tft, mode);
 
     log_d("Draw done! %i\n", millis());
 }
