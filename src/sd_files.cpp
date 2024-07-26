@@ -12,7 +12,7 @@
 #include "SD.h"
 #else
 #include "SD_MMC.h"
-#define SD_MMC SD
+#define SD SD_MMC
 #endif
 
 class ArduinoReadFileStream : public IReadStream {

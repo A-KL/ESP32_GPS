@@ -69,7 +69,7 @@ void setup()
     //printFreeMem();
     gpsInit();
 
-    digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
+    //digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
     digitalWrite(TFT_CS, HIGH); // TFT chip select
 
     tft.init();
