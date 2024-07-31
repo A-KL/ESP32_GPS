@@ -10,6 +10,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <files.h>
+#include <geometry.h>
 
 #include "maps.h"
 
@@ -255,6 +256,7 @@ bool get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCach
         }
 
         auto new_block = new MapBlock();
+        
         auto stream = fileSystem->Open(file_name);
 
         if (!stream) {

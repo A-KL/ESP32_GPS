@@ -11,7 +11,7 @@
     #include "arduino_app.h"
 #else
     #include "sdl_app.h"
-    #include <EArduino.h>
+    #include <_Arduino.h>
     #include <logs.h>
 #endif
 

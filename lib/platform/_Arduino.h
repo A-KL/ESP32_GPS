@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef Arduino
+#ifndef ARDUINO
 
 #include <logs.h>
 #include <fstream>

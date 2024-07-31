@@ -52,13 +52,6 @@ class ArduinoFileStreamFactory : public IFileSystem {
 
 bool init_file_system() 
 {
-    #ifndef SD_CS_PIN
-    // if (!SD.setPins(SD_SCLK_PIN, SD_MOSI_PIN, SD_MISO_PIN)) {
-    //     log_e("Unable to set pins");
-    //     return false;
-    // }
-    #endif
-
     log_i("Mounting SD MMC");
 
     #ifdef SD_CS_PIN
@@ -85,13 +78,13 @@ bool init_file_system()
     log_i("SD Card Type:");
     
     if (cardType == CARD_MMC) {
-        log_i("MMC");
+        log_i("  MMC");
     } else if (cardType == CARD_SD) {
-        log_i("SDSC");
+        log_i("  SDSC");
     } else if (cardType == CARD_SDHC) {
-        log_i("SDHC");
+        log_i("  SDHC");
     } else {
-        log_i("UNKNOWN");
+        log_i("  UNKNOWN");
     }
     
     auto cardSize = SD.cardSize() / 1024.0 / 1024.0 / 1024.0;
