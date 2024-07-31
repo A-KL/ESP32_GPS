@@ -98,6 +98,11 @@ unsigned long  esp_get_minimum_free_heap_size()
     return 0;
 }
 
+unsigned long esp_spiram_get_size()
+{
+    return 0;
+}
+
 unsigned long  heap_caps_get_largest_free_block(int block)
 {
     return 0;
