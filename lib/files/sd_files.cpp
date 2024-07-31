@@ -5,7 +5,6 @@
 #include "FS.h"
 #include "SPI.h"
 #include <StreamUtils.h>
-#include <draw.h>
 #include "files.h"
 
 #ifdef SD_CS_PIN
@@ -54,10 +53,10 @@ class ArduinoFileStreamFactory : public IFileSystem {
 bool init_file_system() 
 {
     #ifndef SD_CS_PIN
-    if (!SD.setPins(SD_SCLK_PIN, SD_MOSI_PIN, SD_MISO_PIN)) {
-        log_e("Unable to set pins");
-        return false;
-    }
+    // if (!SD.setPins(SD_SCLK_PIN, SD_MOSI_PIN, SD_MISO_PIN)) {
+    //     log_e("Unable to set pins");
+    //     return false;
+    // }
     #endif
 
     log_i("Mounting SD MMC");
@@ -68,7 +67,7 @@ bool init_file_system()
         return false;
     }
     #else
-    if (!SD_MMC.begin("/sdcard", true)) {
+    if (!SD.begin("/sdcard", true)) {
         log_e("Card Mount Failed");
         return false;
     }

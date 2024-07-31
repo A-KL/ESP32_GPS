@@ -14,18 +14,18 @@
 #include "maps.h"
 
 // @brief Returns the int16 or 0 if empty
-int16_t parse_int16(IReadStream& file)
+int16_t parse_int16(IReadStream* file)
 {
     char num[16];
     uint8_t i;
     char c;
     i=0;
-    c = (char )file.read();
+    c = (char )file->read();
     if( c == '\n') return 0;
     while( c>='0' && c <= '9'){
         assert( i < 15);
         num[i++] = c;
-        c = (char )file.read();
+        c = (char )file->read();
     }
     num[i] = '\0';
     if( c != ';' && c != ',' && c != '\n'){
@@ -44,28 +44,28 @@ int16_t parse_int16(IReadStream& file)
 }
 
 // @brief Returns the string until terminator char or newline. The terminator character is not included but comsumed from stream.
-void parse_str_until(IReadStream& file, char terminator, char *str)
+void parse_str_until(IReadStream* file, char terminator, char *str)
 {
     uint8_t i;
     char c;
     i=0;
-    c = (char )file.read();  
+    c = (char )file->read();  
     while( c != terminator && c != '\n'){
         assert(i < 29);
         str[i++] = c;
-        c = (char )file.read();
+        c = (char )file->read();
     }
     str[i] = '\0';
 }
 
-void parse_coords(IReadStream& file, std::vector<Point16>& points)
+void parse_coords(IReadStream* file, std::vector<Point16>& points)
 {
     char str[30];
     assert(points.size() == 0);
     Point16 point;
     while(true)
     {
-        try{
+        try {
             parse_str_until(file, ',', str);
             if (str[0] == '\0') break;
             point.x = (int16_t) std::stoi(str);
@@ -83,7 +83,7 @@ void parse_coords(IReadStream& file, std::vector<Point16>& points)
     // points.shrink_to_fit();
 }
 
-void read_map_block(IReadStream& file, MapBlock* result, int max_zoom = 7)
+void read_map_block(IReadStream* file, MapBlock* result, int max_zoom = 7)
 { 
     char c;
     char str[30];
@@ -97,7 +97,7 @@ void read_map_block(IReadStream& file, MapBlock* result, int max_zoom = 7)
         while(0);
     }
 
-    int16_t count = parse_int16( file);
+    int16_t count = parse_int16(file);
     assert(count > 0);
     line++;
     log_d("count: %i\n", count);
@@ -262,7 +262,7 @@ bool get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCach
             return false;
         }
 
-        read_map_block(*stream, new_block);
+        read_map_block(stream, new_block);
 
         delete stream;
 

@@ -63,6 +63,9 @@ void setup()
     pinMode(PWR_EN_PIN, OUTPUT);
     digitalWrite(PWR_EN_PIN, HIGH);
 
+    pinMode(PWR_ON_PIN, OUTPUT);
+    digitalWrite(PWR_ON_PIN, HIGH);
+
     gpioInit();
     tftfOff();
 
