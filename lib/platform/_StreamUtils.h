@@ -8,7 +8,7 @@
 class ReadBufferingStream
 {
     public:
-        explicit ReadBufferingStream(std::ifstream &upstream, size_t capacity) 
+        explicit ReadBufferingStream(std::ifstream& upstream, size_t capacity) 
             : _upstream(upstream), _capacity(capacity), _buffer(0)
         { }
 
