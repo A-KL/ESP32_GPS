@@ -16,6 +16,8 @@
 #endif
 
 TFT_eSPI tft;
+TFT_eSprite img = TFT_eSprite(&tft);
+
 MemCache memCache;
 std::vector<Coord> samples;
 
@@ -82,6 +84,10 @@ void setup()
     tft.setCursor(5,5,4);
     tft.println("Initializing...");
     tftOn();
+
+    img.setColorDepth(8);
+    img.createSprite(tft.width(), tft.height());
+    img.fillSprite(BACKGROUND_COLOR);
 
    // printFreeMem();
 

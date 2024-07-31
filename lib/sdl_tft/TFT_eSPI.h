@@ -64,4 +64,31 @@ private:
     void SDL_RenderText(SDL_Renderer* render, int32_t x0, int32_t y0, const char* msg);
 };
 
+class TFT_eSprite
+{
+public:
+    TFT_eSprite(TFT_eSPI* tft)
+    : _tft(tft), _depth(8), _w(10), _h(10), _bgcolor(0xFF)
+    {
+    }
+
+    void setColorDepth(int depth) {
+        _depth = depth;
+    }
+
+    void createSprite(int w, int h) {
+        _w = w;
+        _h = h;
+    }
+
+    void fillSprite(uint16_t color) {
+        _bgcolor = color;
+    }
+    
+private:
+    TFT_eSPI* _tft;
+    int _depth, _w, _h;
+    uint16_t _bgcolor;
+};
+
 #endif
