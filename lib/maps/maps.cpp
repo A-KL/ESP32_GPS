@@ -66,15 +66,16 @@ void parse_coords(IReadStream* file, std::vector<Point16>& points)
     Point16 point;
     while(true)
     {
-        try {
+       try {
             parse_str_until(file, ',', str);
             if (str[0] == '\0') break;
-            point.x = (int16_t) std::stoi(str);
+            point.x = (int16_t) std::atol(str);
             parse_str_until(file, ';', str);
             assert(str[0] != '\0');
-            point.y = (int16_t)std::stoi(str);
-            // log_d("point: %i %i", point.x, point.y);
-        } catch(std::invalid_argument){
+            point.y = (int16_t)std::atol(str);
+            log_d("x: %i, y: %s, ram: %i", point.x, str, esp_get_free_heap_size() / 1024);
+            //log_d("point: %i %i", point.x, point.y);
+        } catch(const std::invalid_argument &error){
             log_e("parse_coords invalid_argument: %s\n", str);
         } catch(const std::out_of_range &error){
             log_e("parse_coords out_of_range: %s\n", str);
@@ -112,7 +113,7 @@ void read_map_block(IReadStream* file, MapBlock* result, int max_zoom = 7)
         // log_d("line: %i", line);
         parse_str_until( file, '\n', str); // color
         assert( str[0] == '0' && str[1] == 'x');
-        polygon.color = (uint16_t)std::stoul(str, nullptr, 16);
+        polygon.color = (uint16_t)std::stoi(str, nullptr, 16);
         //log_d("polygon.color: %i\n", polygon.color);
         line++;
         parse_str_until( file, '\n', str); // maxzoom
@@ -257,7 +258,33 @@ bool get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCach
 
         auto new_block = new MapBlock();
         
-        auto stream = fileSystem->Open(file_name);
+        // TEMP
+        // auto stream = fileSystem->OpenRead(file_name);
+        // auto out_stream = fileSystem->OpenWrite("test.tmp");
+
+        // if (!stream) {
+        //     log_e("Map file not found: %s\n", file_name);
+        //     return false;
+        // }
+
+        // log_e("Map file not found: %s\n", file_name);
+
+        // while (true) {
+        //     auto val = stream->read();
+        //     if(val<0) {
+        //         break;
+        //     }
+        //     out_stream->write(val);
+        // }
+
+        //  delete out_stream;
+        //  delete stream;
+        // return false;
+         //TEMP
+
+        
+
+        auto stream = fileSystem->OpenRead(file_name);
 
         if (!stream) {
             log_e("Map file not found: %s\n", file_name);
@@ -270,7 +297,7 @@ bool get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCach
 
         new_block->inView = true;
         new_block->offset = Point32( block_min_x, block_min_y);
-        memCache.blocks.push_back( new_block); // add the block to the memory cache
+        memCache.blocks.push_back(new_block); // add the block to the memory cache
 
         assert(memCache.blocks.size() <= MAPBLOCKS_MAX);
 

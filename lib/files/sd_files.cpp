@@ -36,16 +36,42 @@ class ArduinoReadFileStream : public IReadStream {
         fs::File _file;
 };
 
+class ArduinoWriteStream : public IWriteStream {
+    public:
+        ArduinoWriteStream(const char* fileName) {
+            _file = SD.open(fileName, FILE_WRITE);
+        }
+
+        inline virtual void write(char data) {
+            _file.write(data);
+        };
+
+        ~ArduinoWriteStream() {
+            _file.flush();
+            _file.close();
+        }
+
+    private:
+        fs::File _file;
+};
+
 class ArduinoFileStreamFactory : public IFileSystem {
     public:
         ArduinoFileStreamFactory(const char* root = NULL) : _root(root)
         {}
 
-        virtual IReadStream* Open(const char* fileName) const
+        virtual IReadStream* OpenRead(const char* fileName) const
         {
             auto fullPath =  _root + "/" + fileName;
             return new ArduinoReadFileStream(fullPath.c_str());
         }
+
+        virtual IWriteStream* OpenWrite(const char* fileName) const
+        {
+            auto fullPath =  _root + "/" + fileName;
+            return new ArduinoWriteStream(fullPath.c_str());
+        }
+
     private:
         std::string _root;
 };
