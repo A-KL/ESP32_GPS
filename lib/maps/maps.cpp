@@ -73,7 +73,7 @@ void parse_coords(IReadStream* file, std::vector<Point16>& points)
             parse_str_until(file, ';', str);
             assert(str[0] != '\0');
             point.y = (int16_t)std::atol(str);
-            log_d("x: %i, y: %s, ram: %i", point.x, str, esp_get_free_heap_size() / 1024);
+           // log_d("x: %i, y: %s, ram: %i", point.x, str, esp_get_free_heap_size() / 1024);
             //log_d("point: %i %i", point.x, point.y);
         } catch(const std::invalid_argument &error){
             log_e("parse_coords invalid_argument: %s\n", str);
@@ -146,7 +146,7 @@ void read_map_block(IReadStream* file, MapBlock* result, int max_zoom = 7)
         total_points += polygon.points.size();
         count--;
     }
-    assert( count == 0);
+    assert(count == 0);
     
     // read lines
     parse_str_until( file, ':', str);
@@ -233,7 +233,7 @@ bool get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCach
             continue;
         }
         
-        log_d("load from disk (%i, %i) %i\n", block_min_x, block_min_y, millis());
+        // log_d("load from disk (%i, %i) %i\n", block_min_x, block_min_y, millis());
         // block is not in memory => load from disk
         int32_t block_x = (block_min_x >> MAPBLOCK_SIZE_BITS) & MAPFOLDER_MASK;
         int32_t block_y = (block_min_y >> MAPBLOCK_SIZE_BITS) & MAPFOLDER_MASK;
