@@ -1,10 +1,11 @@
 #ifdef ARDUINO
 
 #include <Arduino.h>
-#include <TFT_eSPI.h>
+#include <StreamUtils.h>
+
 #include "FS.h"
 #include "SPI.h"
-#include <StreamUtils.h>
+
 #include "files.h"
 
 #ifdef SD_CS_PIN

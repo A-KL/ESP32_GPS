@@ -1,7 +1,5 @@
 #pragma once
 
-#ifndef ARDUINO
-
 #include <SDL2/SDL.h>
 
 class TFT_eSPI
@@ -90,5 +88,3 @@ private:
     int _depth, _w, _h;
     uint16_t _bgcolor;
 };
-
-#endif

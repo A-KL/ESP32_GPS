@@ -19,7 +19,7 @@ struct Coord {
     {}
     Coord(double _lat, double _lng): lat(_lat), lng(_lng)
     {}
-    Point32 getPoint32() {
+    inline Point32 ToPoint() {
         return Point32(lon2x(lng), lat2y(lat));
     }
     double lat = 0;

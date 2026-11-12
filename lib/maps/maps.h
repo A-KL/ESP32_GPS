@@ -1,12 +1,9 @@
 #pragma once
 
-#include <stdint.h>
 #include <vector>
-#include <array>
 #include <math.h>
-#include <map>
 
-#define MAPBLOCKS_MAX 6         // max blocks in memory
+#define MAPBLOCKS_MAX       6   // max blocks in memory
 #define MAPBLOCK_SIZE_BITS 12   // 4096 x 4096 coords (~meters) per block  
 #define MAPFOLDER_SIZE_BITS 4   // 16 x 16 map blocks per folder
 
@@ -30,11 +27,11 @@ struct MapBlock {
 
 /// @brief MapBlocks stored in memory
 struct MemCache {
-    std::vector<MapBlock* > blocks;
+    std::vector<MapBlock*> blocks;
     // uint32_t total_polylines = 0;
     // uint32_t total_polygons = 0;
     // uint32_t total_inview_polylines = 0;
     // uint32_t total_inview_polygons = 0;
 };
 
-bool get_map_blocks(const IFileSystem* fileSystem, BBox& bbox, MemCache& memCache);
+bool get_map_blocks(const IFileSystem& fileSystem, const BBox& bbox, MemCache& memCache);

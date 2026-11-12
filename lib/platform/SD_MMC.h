@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef ARDUINO
-
-#include <iostream>
 #include <fstream>
 
 namespace fs
@@ -33,5 +30,3 @@ namespace fs
 }
 
 extern fs::SDMMCFS SD_MMC;
-
-#endif

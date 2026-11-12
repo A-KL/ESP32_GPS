@@ -1,4 +1,3 @@
-
 #include <colors.h>
 #include <geometry.h>
 #include <gps.h>
@@ -7,11 +6,12 @@
 #include "../lib/conf.h"
 #include "draw.h"
 
+#include <Arduino.h>
+
 #ifdef ARDUINO
     #include "arduino_app.h"
 #else
     #include "sdl_app.h"
-    #include <_Arduino.h>
     #include <logs.h>
 #endif
 
@@ -28,8 +28,8 @@ int mode = DEVMODE_NAV;//DEVMODE_MOVE; //DEVMODE_NAV
 bool moved = true;
 
 Coord map_center_coord(DEFAULT_LAT, DEFAULT_LON);
-Point32 map_center_point = map_center_coord.getPoint32();
-ViewPort viewPort(map_center_point, zoom_level, tft.width(), tft.height());
+Point32 map_center_point = map_center_coord.ToPoint();
+viewport_t viewport(map_center_point, zoom_level, tft.width(), tft.height());
 IFileSystem* fileSystem = get_file_system(MAPS_LOCATION);
 
 void printFreeMem() {
@@ -99,19 +99,19 @@ void setup()
     }
 
     tft.println("Reading map...");
-    viewPort.setCenter(map_center_point);
-    auto result = get_map_blocks(fileSystem, viewPort.bbox, memCache);
+    viewport.setCenter(map_center_point);
+    auto result = get_map_blocks(*fileSystem, viewport.bounding_box, memCache);
 
     if (!result) {
         tft.println("Error: Unable to read map!");
         stop();
     }
     
-    draw(tft, viewPort, memCache, zoom_level, mode);
+    draw(tft, viewport, memCache, zoom_level, mode);
 
     tft_msg(tft, "Waiting for satellites...");
 
-    // stats(viewPort, mmap);
+    // stats(viewport, mmap);
     // printFreeMem();
     // sleepInit();
 
@@ -121,7 +121,7 @@ void setup()
 void loop()
 {   
     Coord coord;
-    Point32 p = viewPort.center;
+    Point32 p = viewport.center;
     //sleepLoop();
 
     if (mode == DEVMODE_NAV) {
@@ -130,7 +130,7 @@ void loop()
         if (coord.isValid && 
             abs(coord.lat-prev_lat) > 0.00005 &&
             abs(coord.lng-prev_lng) > 0.00005) {
-                p = coord.getPoint32();
+                p = coord.ToPoint();
                 prev_lat = coord.lat;
                 prev_lng = coord.lng;
                 moved = true;
@@ -163,9 +163,9 @@ void loop()
     }
 
     if (moved) {
-        viewPort.setCenter(p);
-        auto res = get_map_blocks(fileSystem, viewPort.bbox, memCache);
-        draw(tft, viewPort, memCache, zoom_level, mode);
+        viewport.setCenter(p);
+        auto res = get_map_blocks(*fileSystem, viewport.bounding_box, memCache);
+        draw(tft, viewport, memCache, zoom_level, mode);
         tft_header(tft, coord, mode);
         tft_footer(tft, zoom_level);
         delay(10);

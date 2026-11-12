@@ -1,7 +1,5 @@
 #pragma once
 
-#ifndef ARDUINO
-
 #include <iostream>
 #include <fstream>
 
@@ -27,5 +25,3 @@ class ReadBufferingStream
         size_t _capacity;
         char _buffer;
 };
-
-#endif

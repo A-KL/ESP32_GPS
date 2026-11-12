@@ -2,7 +2,6 @@
 
 #ifdef ARDUINO
 
-#include <Arduino.h>
 #include <SPI.h>
 #include <TFT_eSPI.h>
 // #include <xpt2046.h>

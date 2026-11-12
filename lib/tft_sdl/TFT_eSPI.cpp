@@ -1,5 +1,3 @@
-#ifndef ARDUINO
-
 #include <vector>
 #include <string>
 
@@ -212,5 +210,3 @@ void TFT_eSPI::SDL_RenderText(SDL_Renderer* render, int32_t x0, int32_t y0, cons
     SDL_FreeSurface(textSurface);
     TTF_CloseFont(font);
 }
-
-#endif

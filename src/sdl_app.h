@@ -66,8 +66,6 @@ int digitalRead(int pin)
 			}
 		}
 		break;
-	default:
-		break;
 	}
 
 	const Uint8* state = SDL_GetKeyboardState(nullptr);
@@ -88,10 +86,8 @@ int digitalRead(int pin)
 
 		case RIGHT_BUTTON:
 			return state[SDL_SCANCODE_RIGHT];
-
-		default:
-			return false;
 	}
+	return false;
 }
 
 void stop()
@@ -108,28 +104,28 @@ void sleepLoop()
 
 int main()
 {
-    auto init_sdl = SDL_Init(SDL_INIT_VIDEO);
+	auto init_sdl = SDL_Init(SDL_INIT_VIDEO);
 	auto init_tff = TTF_Init();
 
 	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 
 	if (init_sdl == -1) {
 		fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
-		return 1;
+		return init_sdl;
 	}
 
 	if (init_tff == -1) {
 		fprintf(stderr, "Unable to initialize SDL_TTF: %s\n", TTF_GetError());
-		return 1;
+		return init_tff;
 	}
 
     auto window = SDL_CreateWindow(
-		"SDL Maps",
-		SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED,
-		TFT_WIDTH, 
-        TFT_HEIGHT, 
-		SDL_WINDOW_RESIZABLE ); //| SDL_WINDOW_METAL
+				"SDL Maps",
+				SDL_WINDOWPOS_UNDEFINED,
+				SDL_WINDOWPOS_UNDEFINED,
+				TFT_WIDTH, 
+				TFT_HEIGHT, 
+				SDL_WINDOW_RESIZABLE ); //| SDL_WINDOW_METAL
 
 	if (window == NULL) {
 		fprintf(stderr, "ERROR: can't create window: %s\n", SDL_GetError());
@@ -150,10 +146,10 @@ int main()
 	tft.setRender(_sdl);
 
 	// auto start_time = std::chrono::high_resolution_clock::now();
-    setup();
-    // auto end_time = std::chrono::high_resolution_clock::now();
+	setup();
+	// auto end_time = std::chrono::high_resolution_clock::now();
 	// auto time = end_time - start_time;
-    // std::cout << time / std::chrono::milliseconds(1) << "ms to run.\n";
+	// std::cout << time / std::chrono::milliseconds(1) << "ms to run.\n";
 
 	do {
 		SDL_Delay(10);

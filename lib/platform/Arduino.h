@@ -1,7 +1,5 @@
 #pragma once
 
-#ifndef ARDUINO
-
 #include <logs.h>
 #include <fstream>
 #include <chrono>
@@ -132,5 +130,3 @@ unsigned long  uxTaskGetStackHighWaterMark(void* arg)
 // {
 //     return 0;
 // }
-
-#endif

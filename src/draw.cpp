@@ -142,7 +142,7 @@ void drawMe(TFT_eSPI& tft, int mode)
     }
 }
 
-void draw(TFT_eSPI& tft, ViewPort& viewPort, MemCache& memCache, int zoom_level, int mode)
+void draw(TFT_eSPI& tft, viewport_t& viewport, MemCache& memCache, int zoom_level, int mode)
 {
     auto SCREEN_WIDTH = tft.width();
     auto SCREEN_HEIGHT = tft.height();
@@ -150,22 +150,19 @@ void draw(TFT_eSPI& tft, ViewPort& viewPort, MemCache& memCache, int zoom_level,
     tft.fillScreen(BACKGROUND_COLOR);
 
     Polygon new_polygon;
+    int16_t p1x, p1y, p2x, p2y;
     uint32_t total_time = millis();
 
-    log_d("Draw start %i\n", total_time);
-
-    int16_t p1x, p1y, p2x, p2y;
-
-    for (MapBlock* mblock: memCache.blocks)
+    for (auto mblock: memCache.blocks)
     {
         uint32_t block_time = millis();
-        if( !mblock->inView) continue;
+        if (!mblock->inView) continue;
 
-        // block to draw
-        Point16 screen_center_mc = viewPort.center.toPoint16() - mblock->offset.toPoint16();  // screen center with features coordinates
-        BBox screen_bbox_mc = viewPort.bbox - mblock->offset;  // screen boundaries with features coordinates
+        // Block to draw
+        Point16 screen_center_mc = viewport.center.toPoint16() - mblock->offset.toPoint16();  // screen center with features coordinates
+        BBox screen_bbox_mc = viewport.bounding_box - mblock->offset;  // screen boundaries with features coordinates
         
-        ////// Polygons 
+        // Polygons 
         for (Polygon polygon : mblock->polygons)
         {
             if (zoom_level > polygon.maxzoom) continue;
@@ -178,7 +175,7 @@ void draw(TFT_eSPI& tft, ViewPort& viewPort, MemCache& memCache, int zoom_level,
             new_polygon.bbox.max.y = toScreenCoord(SCREEN_WIDTH, polygon.bbox.max.y, screen_center_mc.y, zoom_level);
             
             new_polygon.points.clear();
-            for (Point16 p : polygon.points){ // TODO: move to fill_polygon
+            for (Point16 p : polygon.points) { // TODO: move to fill_polygon
                 new_polygon.points.push_back( Point16(
                     toScreenCoord(SCREEN_WIDTH, p.x, screen_center_mc.x, zoom_level),
                     toScreenCoord(SCREEN_WIDTH, p.y, screen_center_mc.y, zoom_level)));
@@ -190,7 +187,7 @@ void draw(TFT_eSPI& tft, ViewPort& viewPort, MemCache& memCache, int zoom_level,
         log_d("Block polygons done %i ms\n", millis()-block_time);
         block_time = millis();
         
-        ////// Lines
+        // Lines
         for( Polyline line : mblock->polylines){
             if( zoom_level > line.maxzoom) continue;
             if( !line.bbox.intersects( screen_bbox_mc)) continue;
