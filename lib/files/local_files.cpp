@@ -35,7 +35,7 @@ class NativeReadStream : public IReadStream {
             _stream = new std::ifstream(fileName);
         }
 
-        inline uint8_t IsOpen() {
+        inline bool IsOpen() {
             return _stream->is_open();
         }
 
