@@ -1,5 +1,6 @@
 #pragma once
 
+#include <geometry.h>
 #include <vector>
 #include <math.h>
 
@@ -11,10 +12,6 @@ const int32_t MAPBLOCK_MASK  = pow(2, MAPBLOCK_SIZE_BITS) - 1;     // ...0000000
 const int32_t MAPFOLDER_MASK = pow(2, MAPFOLDER_SIZE_BITS) - 1;    // ...00001111
 
 class IFileSystem;
-struct Point32;
-struct Polyline;
-struct Polygon;
-struct BBox;
 
 /// @brief Map square area of aprox 4096 meters side. Correspond to one single map file.
 struct MapBlock {

@@ -5,71 +5,49 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-/// @brief Point in 16 bits projected coordinates (x,y) 
-struct Point16 {
-    Point16()
+template<typename T>
+struct Point {
+
+    Point() : x(0), y(0)
     {};
 
-    Point16(int16_t x, int16_t y) 
-    : x(x), y(y) 
+    Point(T x, T y) : x(x), y(y) 
     {};
 
-    Point16(char *coords_pair) // char array like:  11.222,333.44
+    Point(char *coords_pair) // char array like:  11.222,333.44
     {
         char *next;
-        x = (int16_t )round( strtod( coords_pair, &next));  // 1st coord // TODO: change by strtol and test
-        y = (int16_t )round( strtod( ++next, NULL));  // 2nd coord
+        x = (T)round(strtod(coords_pair, &next));  // 1st coord // TODO: change by strtol and test
+        y = (T)round(strtod(++next, NULL));        // 2nd coord
     }
 
-    Point16 operator-(const Point16 p) {
-        return Point16(x-p.x, y-p.y);
+    inline Point operator-(const Point& p) const {
+        return Point(x-p.x, y-p.y);
     };
 
-    Point16 operator+(const Point16 p) { 
-        return Point16(x+p.x, y+p.y);
+    inline Point operator+(const Point& p) const { 
+        return Point(x+p.x, y+p.y);
     };
 
-    int16_t x;
-    int16_t y;
+    inline bool operator==(const Point& p) const
+    {
+        return (x == p.x && y == p.y); 
+    };
+
+    template<typename T2>
+    inline Point<T2> To() const { 
+        return Point<T2>(x, y);
+    };
+
+    T x;
+    T y;
 };
+
+/// @brief Point in 16 bits projected coordinates (x,y) 
+typedef Point<int16_t> Point16;
 
 /// @brief Point in 32 bits projected coordinates (x,y) 
-struct Point32 {
-    Point32()
-    {};
-
-    Point32(int32_t x, int32_t y) 
-    : x(x),y(y) 
-    {};
-
-    Point32(Point16 p)
-    : x(p.x), y(p.y) 
-    {};
-
-    Point32 operator-(const Point32 p)
-    { 
-        return Point32( x-p.x, y-p.y);};
-
-    Point32 operator+(const Point32 p)
-    {
-        return Point32( x+p.x, y+p.y);
-    };
-
-    Point16 toPoint16()
-    { 
-        return Point16(x, y);
-    }; // TODO: check limits
-
-    inline bool operator==(const Point32 p)
-    {
-        return x==p.x && y==p.y; 
-    };
-
-    /// @brief Parse char array with the coordinates
-    /// @param coords_pair char array like:  11.222,333.44
-    int32_t x;
-    int32_t y;
-};
+typedef Point<int32_t> Point32;
 
 // @brief Bounding Box
 struct BBox {
@@ -79,7 +57,7 @@ struct BBox {
     // @brief Bounding Box
     // @param min top left corner
     // @param max bottom right corner
-    BBox( Point32 min, Point32 max)
+    BBox(Point32 min, Point32 max)
     : min(min), max(max)
     {};
 
@@ -102,19 +80,19 @@ struct BBox {
     Point32 max;
 };
 
-// // @brief Simple two points line 
-// struct Line {
-//     Line() 
-//     {};
+// @brief Simple two points line 
+struct Line {
+    Line() 
+    {};
 
-//     Line(Point16 p1, Point16 p2) : p1(p1), p2(p2) 
-//     {};
+    Line(Point16 p1, Point16 p2) : p1(p1), p2(p2) 
+    {};
 
-//     Point16 p1;
-//     Point16 p2;
-//     uint16_t color;
-//     uint8_t width;
-// };
+    Point16 p1;
+    Point16 p2;
+    uint16_t color;
+    uint8_t width;
+};
 
 // @brief List of points, where line segments are drawn between consecutive points.
 struct Polyline {

@@ -3,11 +3,11 @@
 #include <gps.h>
 #include <maps.h>
 #include <geometry.h>
-#include <TFT_eSPI_Ex.h>
 
 #include "../lib/conf.h"
 
 #include <TFT_eSPI.h>
+#include <TFT_eSPI_Ex.h>
 
 #ifdef ARDUINO
     #include <Arduino.h>
@@ -188,7 +188,7 @@ void draw(TFT_eSPI& tft, viewport_t& viewport, MemCache& memCache, int zoom_leve
         if (!mblock->inView) continue;
 
         // Block to draw
-        Point16 screen_center_mc = viewport.center.toPoint16() - mblock->offset.toPoint16();  // screen center with features coordinates
+        Point16 screen_center_mc = viewport.center.To<int16_t>() - mblock->offset.To<int16_t>();  // screen center with features coordinates
         BBox screen_bbox_mc = viewport.bounding_box - mblock->offset;  // screen boundaries with features coordinates
         
         // Polygons 

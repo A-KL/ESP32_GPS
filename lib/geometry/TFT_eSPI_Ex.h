@@ -1,14 +1,7 @@
 #pragma once
 
-#include <TFT_eSPI.h>
+#include <cassert>
 #include "geometry.h"
-
-#ifdef ARDUINO
-    #include <Arduino.h>
-#else
-    #include <logs.h>
-    #include <cassert>
-#endif
 
 /* Scanline fill algorithm */
 void fillPolygon(TFT_eSPI& tft, const Polygon& p)
