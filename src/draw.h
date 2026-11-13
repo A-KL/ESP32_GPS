@@ -13,4 +13,6 @@ void tft_msg(TFT_eSPI& tft, const char* msg);
 
 void header_msg(TFT_eSPI& tft, const char* msg);
 
+void draw_init(TFT_eSPI& tft);
+
 void draw(TFT_eSPI& tft, viewport_t& viewport, MemCache& memCache, int zoom_level, int mode);

@@ -246,3 +246,20 @@ void TFT_eSPI::SDL_RenderText(SDL_Renderer* render, int32_t x0, int32_t y0, cons
     SDL_FreeSurface(textSurface);
     TTF_CloseFont(font);
 }
+
+void TFT_eSPI::startWrite()
+{ }
+
+void TFT_eSPI::endWrite()
+{ }
+
+void TFT_eSPI::drawPixel(int32_t x, int32_t y, uint16_t color)
+{
+    SDL_SetRenderDrawColor565(_sdl, color);
+    SDL_RenderDrawPoint(_sdl, x, y);
+}
+
+void TFT_eSPI::drawFastHLine(int32_t x, int32_t y, int32_t w, uint16_t color)
+{ 
+    drawLine(x, y, x + w, y, color);
+}

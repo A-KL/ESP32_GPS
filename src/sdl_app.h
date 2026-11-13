@@ -23,13 +23,11 @@ void setup();
 
 void loop();
 
-#define CUSTOM_DELAY
 void delay(uint32_t msec)
 {
     SDL_Delay(msec);
 }
 
-#define CUSTOM_DIGITAL_READ
 int digitalRead(int pin)
 {
 	switch (event.type)

@@ -85,6 +85,8 @@ void setup()
     tft.println("Initializing...");
     tftOn();
 
+    draw_init(tft);
+
     // img.setColorDepth(8);
     // img.createSprite(tft.width(), tft.height());
     // img.fillSprite(BACKGROUND_COLOR);
@@ -122,7 +124,6 @@ void loop()
 {   
     static Coord coord;
     static Point32 p = viewport.center;
-    //sleepLoop();
 
     if (mode == DEVMODE_NAV) {
         gpsGetPosition(coord);

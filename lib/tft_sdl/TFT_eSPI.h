@@ -53,6 +53,14 @@ public:
 
     void fillRoundRect(int32_t x, int32_t y, int32_t w, int32_t h, int32_t r, uint32_t color);
 
+    void startWrite();
+
+    void endWrite();
+
+    void drawPixel(int32_t x, int32_t y, uint16_t color);
+
+    void drawFastHLine(int32_t x, int32_t y, int32_t w, uint16_t color);
+
 private:
     SDL_Renderer* _sdl;
     uint16_t _cursorX, _cursorY;

@@ -14,9 +14,15 @@
 #else
     #include <logs.h>
     #include <cassert>
+    #define PROGMEM
 #endif
 
+#include <OpenFontRender.h>
+#include "TrueType/NotoSans_Bold.h"
+
 #include "draw.h"
+
+OpenFontRender ofr;
 
 // class MapViewport
 // {
@@ -69,11 +75,35 @@
 //         }
 // };
 
+void draw_init(TFT_eSPI& tft)
+{
+    ofr.setDrawer(tft);
+    ofr.loadFont(NotoSans_Bold, sizeof(NotoSans_Bold));
+}
+
+void draw_text(const char* text, int x, int y, int w, int h, uint16_t color, uint16_t background, int size = 16)
+{
+    ofr.setFontSize(size);
+    ofr.setCursor(x + w/2, y-2);
+    ofr.setFontColor(color, background);
+    ofr.cprintf(text);
+}
+
+void draw_text_formatted(int x, int y, uint16_t color, uint16_t background, int size, const char* format, ...)
+{
+    ofr.setFontSize(size);
+    ofr.setCursor(x, y);
+    ofr.setFontColor(color, background);
+    va_list args;
+    va_start(args, format);
+    ofr.printf(format, args);
+    va_end(args);
+}
+
 void tft_header(TFT_eSPI& tft, Coord& pos, int mode)
 {
     tft.fillRoundRect(0, -10, tft.width(), 40, 10, YELLOWCLEAR);
-    tft.setCursor(5,5,2);
-    tft.printf("%f %f SAT:%d MODE:%d", pos.lng, pos.lat, pos.satellites, mode);
+    draw_text_formatted(5, 5, BLACK, YELLOWCLEAR, 16, "%f %f SAT:%d MODE:%d", pos.lng, pos.lat, pos.satellites, mode);
 }
 
 void tft_footer(TFT_eSPI& tft, int zoom)
@@ -82,10 +112,8 @@ void tft_footer(TFT_eSPI& tft, int zoom)
     auto SCREEN_WIDTH = tft.width();
     auto SCREEN_HEIGHT = tft.height();
 
-    // tft.fillRect(0, SCREEN_HEIGHT - heigh, SCREEN_WIDTH, SCREEN_HEIGHT, CYAN);
     tft.fillRoundRect(0, SCREEN_HEIGHT - heigh + 10, SCREEN_WIDTH, SCREEN_HEIGHT, 10, CYAN);
-    tft.setCursor(5, SCREEN_HEIGHT - 25, 2);
-    tft.printf("ZOOM: %d/%d", zoom, MAX_ZOOM);
+    draw_text_formatted(5, SCREEN_HEIGHT - 25, BLACK, CYAN, 16, "ZOOM: %d/%d", zoom, MAX_ZOOM);
 }
 
 void tft_msg(TFT_eSPI& tft, const char* msg)
