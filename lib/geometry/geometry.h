@@ -93,7 +93,7 @@ struct BBox {
         return p.x >= min.x && p.x <= max.x && p.y >= min.y && p.y <= max.y; 
     }
 
-    inline bool intersects(const BBox& b)
+    inline bool intersects(const BBox& b) const
     { 
         return !(b.min.x > max.x || b.max.x < min.x || b.min.y > max.y || b.max.y < min.y);
     }

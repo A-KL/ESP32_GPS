@@ -107,7 +107,7 @@ inline int16_t toScreenCoord(const double screen_width, const int32_t pxy, const
     return round((double)(pxy - screen_center_xy) / zoom_level) + screen_width / 2.0;
 }
 
-inline void toScreenPolygon(const Polygon source, const Point16& center, const int zoom, const double screen_width, Polygon& result)
+void toScreenPolygon(const Polygon source, const Point16& center, const int zoom, const double screen_width, Polygon& result)
 {
     result.color = source.color;
 
@@ -164,7 +164,7 @@ void draw(TFT_eSPI& tft, viewport_t& viewport, MemCache& memCache, int zoom_leve
         BBox screen_bbox_mc = viewport.bounding_box - mblock->offset;  // screen boundaries with features coordinates
         
         // Polygons 
-        for (Polygon polygon : mblock->polygons)
+        for (auto& polygon : mblock->polygons)
         {
             if (zoom_level > polygon.maxzoom) continue;
             if (!polygon.bbox.intersects(screen_bbox_mc)) continue;
@@ -176,7 +176,7 @@ void draw(TFT_eSPI& tft, viewport_t& viewport, MemCache& memCache, int zoom_leve
             new_polygon.bbox.max.y = toScreenCoord(SCREEN_WIDTH, polygon.bbox.max.y, screen_center_mc.y, zoom_level);
             
             new_polygon.points.clear();
-            for (Point16 p : polygon.points) { // TODO: move to fill_polygon
+            for (const auto& p : polygon.points) { // TODO: move to fill_polygon
                 new_polygon.points.push_back( Point16(
                     toScreenCoord(SCREEN_WIDTH, p.x, screen_center_mc.x, zoom_level),
                     toScreenCoord(SCREEN_WIDTH, p.y, screen_center_mc.y, zoom_level)));
@@ -189,7 +189,7 @@ void draw(TFT_eSPI& tft, viewport_t& viewport, MemCache& memCache, int zoom_leve
         block_time = millis();
         
         // Lines
-        for( Polyline line : mblock->polylines){
+        for( const auto& line : mblock->polylines){
             if( zoom_level > line.maxzoom) continue;
             if( !line.bbox.intersects( screen_bbox_mc)) continue;
 
@@ -228,9 +228,9 @@ void draw(TFT_eSPI& tft, viewport_t& viewport, MemCache& memCache, int zoom_leve
 
 //     ////// Polygons 
 //     int in_screen = 0, in_map = 0,  points_total = 0;
-//     for( Polygon polygon : mblock.polygons){
+//     for( const auto& polygon : mblock.polygons){
 //         bool hit = false;
-//         for( Point16 p : polygon.points){
+//         for( const auto& p : polygon.points){
 //             points_total++;
 //             if( screen_bbox_mc.containsPoint( p)) in_screen++;
 //             // if( map_bbox_mc.contains_point( p)) in_map++;

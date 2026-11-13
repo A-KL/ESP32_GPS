@@ -85,9 +85,9 @@ void setup()
     tft.println("Initializing...");
     tftOn();
 
-    img.setColorDepth(8);
-    img.createSprite(tft.width(), tft.height());
-    img.fillSprite(BACKGROUND_COLOR);
+    // img.setColorDepth(8);
+    // img.createSprite(tft.width(), tft.height());
+    // img.fillSprite(BACKGROUND_COLOR);
 
    // printFreeMem();
 
