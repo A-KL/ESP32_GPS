@@ -41,7 +41,7 @@ public:
 
     void printf(const char* format, ...);
 
-	void fillRect(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint16_t color);
+	void fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint16_t color);
 
     void drawLine(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint16_t color);
 
@@ -49,7 +49,9 @@ public:
 
     void fillTriangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint16_t color);
 
-    void fillCircle(int32_t x0, int32_t y0, int32_t radius, uint16_t color);
+    void fillCircle(int32_t x0, int32_t y0, int32_t radius, uint16_t color, int32_t startAngle = 0, int32_t endAngle = 360);
+
+    void fillRoundRect(int32_t x, int32_t y, int32_t w, int32_t h, int32_t r, uint32_t color);
 
 private:
     SDL_Renderer* _sdl;

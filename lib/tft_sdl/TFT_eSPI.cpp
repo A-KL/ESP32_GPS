@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <cmath>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -106,12 +107,27 @@ void TFT_eSPI::print(int value, int position)
     SDL_RenderText(_sdl, 0, 0, std::to_string(value).c_str());
 }
 
-void TFT_eSPI::fillRect(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint16_t color)
+void TFT_eSPI::fillRoundRect(int32_t x, int32_t y, int32_t w, int32_t h, int32_t r, uint32_t color)
 {
-    SDL_Rect rect { x0, y0, x1, y1 };
-
     SDL_SetRenderDrawColor565(_sdl, color);
 
+    SDL_Rect rect { x, y+r, w, h-2*r };
+    SDL_RenderFillRect(_sdl, &rect);
+
+    fillCircle(x+r, y+r, r, color, 180, 270);
+    fillCircle(x+w-r, y+r, r, color, 270, 360);
+    fillCircle(x+r, y+h-r, r, color, 90, 180);
+    fillCircle(x+w-r, y+h-r, r, color, 0, 90);
+
+    SDL_Rect rect2 { x+r, y, w-2*r, h };
+    SDL_RenderFillRect(_sdl, &rect2);
+}
+
+void TFT_eSPI::fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint16_t color)
+{
+    SDL_SetRenderDrawColor565(_sdl, color);
+
+    SDL_Rect rect { x, y, w, h };
     SDL_RenderFillRect(_sdl, &rect);
 }
 
@@ -166,8 +182,19 @@ void TFT_eSPI::fillTriangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int3
     auto res = SDL_RenderGeometry(_sdl, nullptr, verts.data(), verts.size(), nullptr, 0);
 }
 
-void TFT_eSPI::fillCircle(int32_t x0, int32_t y0, int32_t radius, uint16_t color)
+void TFT_eSPI::fillCircle(int32_t x, int32_t y, int32_t radius, uint16_t color, int32_t startAngle, int32_t endAngle)
 {
+    const int64_t sweep = static_cast<int64_t>(endAngle) - startAngle;
+    const bool fullCircle = sweep >= 360 || sweep <= -360;
+    const auto normalizeAngle = [](int32_t angle) {
+        const int32_t normalized = angle % 360;
+        return normalized < 0 ? normalized + 360 : normalized;
+    };
+    const int32_t start = normalizeAngle(startAngle);
+    const int32_t end = normalizeAngle(endAngle);
+
+    if (!fullCircle && start == end) return;
+
     SDL_SetRenderDrawColor565(_sdl, color);
 
     for (int w = 0; w < radius * 2; w++) {
@@ -176,7 +203,16 @@ void TFT_eSPI::fillCircle(int32_t x0, int32_t y0, int32_t radius, uint16_t color
             int dy = radius - h; // vertical offset
             if ((dx*dx + dy*dy) <= (radius * radius))
             {
-                SDL_RenderDrawPoint(_sdl, x0 + dx, y0 + dy);
+                bool inSweep = fullCircle || (dx == 0 && dy == 0);
+                if (!inSweep) {
+                    double angle = std::atan2(static_cast<double>(dy), static_cast<double>(dx)) * 180.0 / 3.14159265358979323846;
+                    if (angle < 0) angle += 360.0;
+                    inSweep = start < end
+                        ? angle >= start && angle <= end
+                        : angle >= start || angle <= end;
+                }
+
+                if (inSweep) SDL_RenderDrawPoint(_sdl, x + dx, y + dy);
             }
         }
     }

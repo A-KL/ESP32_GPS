@@ -120,8 +120,8 @@ void setup()
 
 void loop()
 {   
-    Coord coord;
-    Point32 p = viewport.center;
+    static Coord coord;
+    static Point32 p = viewport.center;
     //sleepLoop();
 
     if (mode == DEVMODE_NAV) {

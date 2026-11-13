@@ -71,18 +71,19 @@
 
 void tft_header(TFT_eSPI& tft, Coord& pos, int mode)
 {
-    tft.fillRect(0, 0, tft.width(), 25, YELLOWCLEAR);
+    tft.fillRoundRect(0, -10, tft.width(), 40, 10, YELLOWCLEAR);
     tft.setCursor(5,5,2);
     tft.printf("%f %f SAT:%d MODE:%d", pos.lng, pos.lat, pos.satellites, mode);
 }
 
 void tft_footer(TFT_eSPI& tft, int zoom)
 {
-    auto heigh = 20;
+    auto heigh = 40;
     auto SCREEN_WIDTH = tft.width();
     auto SCREEN_HEIGHT = tft.height();
 
-    tft.fillRect(0, SCREEN_HEIGHT - heigh, SCREEN_WIDTH, SCREEN_HEIGHT, CYAN);
+    // tft.fillRect(0, SCREEN_HEIGHT - heigh, SCREEN_WIDTH, SCREEN_HEIGHT, CYAN);
+    tft.fillRoundRect(0, SCREEN_HEIGHT - heigh + 10, SCREEN_WIDTH, SCREEN_HEIGHT, 10, CYAN);
     tft.setCursor(5, SCREEN_HEIGHT - 25, 2);
     tft.printf("ZOOM: %d/%d", zoom, MAX_ZOOM);
 }
