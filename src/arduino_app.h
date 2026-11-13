@@ -2,10 +2,6 @@
 
 #ifdef ARDUINO
 
-#include <SPI.h>
-#include <TFT_eSPI.h>
-// #include <xpt2046.h>
-
 #include <colors.h>
 #include <geometry.h>
 #include <gps.h>

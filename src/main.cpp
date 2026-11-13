@@ -4,19 +4,21 @@
 #include <files.h>
 #include <maps.h>
 #include "../lib/conf.h"
-#include "draw.h"
 
 #include <Arduino.h>
 
 #ifdef ARDUINO
+    #include "TFT_eSPI.h"
     #include "arduino_app.h"
 #else
     #include "sdl_app.h"
     #include <logs.h>
+    TFT_eSPI tft;
 #endif
 
-TFT_eSPI tft;
-TFT_eSprite img = TFT_eSprite(&tft);
+#include "draw.h"
+
+// TFT_eSprite img = TFT_eSprite(&tft);
 
 MemCache memCache;
 std::vector<Coord> samples;
@@ -77,11 +79,13 @@ void setup()
     //digitalWrite(SD_CS_PIN, HIGH); // SD card chips select
     digitalWrite(TFT_CS, HIGH); // TFT chip select
 
-    tft.init();
+    // tft.init();
+    tft.begin();
     tft.setRotation(TFT_ROTATE);
     tft.fillScreen(CYAN);
     tft.setTextColor(BLACK);
-    tft.setCursor(5,5,4);
+    tft.setCursor(5,5);
+    // tft.setCursor(5,5,4);
     tft.println("Initializing...");
     tftOn();
 
