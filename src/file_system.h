@@ -9,8 +9,8 @@
     #define SD SD_MMC
     #endif
 #else
-#include <_StreamUtils.h>
-#include "_SD_MMC.h"
+#include <StreamUtils.h>
+#include "SD_MMC.h"
 #define SD SD_MMC
 #endif
 

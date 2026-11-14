@@ -94,16 +94,22 @@ void draw_text_formatted(int x, int y, uint16_t color, uint16_t background, int 
     ofr.setFontSize(size);
     ofr.setCursor(x, y);
     ofr.setFontColor(color, background);
-    va_list args;
-    va_start(args, format);
-    ofr.printf(format, args);
-    va_end(args);
+
+    char str[256] = {0};
+	va_list ap;
+	va_start(ap, format);
+    {
+	    vsnprintf(str, 256, format, ap);
+    }
+	va_end(ap);
+
+    ofr.drawString(str, ofr.getCursorX(), ofr.getCursorY(), color, background, ofr.getLayout());
 }
 
 void tft_header(TFT_eSPI& tft, Coord& pos, int mode)
 {
     tft.fillRoundRect(0, -10, tft.width(), 40, 10, YELLOWCLEAR);
-    draw_text_formatted(5, 5, BLACK, YELLOWCLEAR, 16, "%f %f SAT:%d MODE:%d", pos.lng, pos.lat, pos.satellites, mode);
+    draw_text_formatted(5, 5, BLACK, YELLOWCLEAR, 16, "%.4f %.4f SAT:%d MODE:%d", pos.lng, pos.lat, pos.satellites, mode);
 }
 
 void tft_footer(TFT_eSPI& tft, int zoom)
@@ -113,20 +119,20 @@ void tft_footer(TFT_eSPI& tft, int zoom)
     auto SCREEN_HEIGHT = tft.height();
 
     tft.fillRoundRect(0, SCREEN_HEIGHT - heigh + 10, SCREEN_WIDTH, SCREEN_HEIGHT, 10, CYAN);
-    draw_text_formatted(5, SCREEN_HEIGHT - 25, BLACK, CYAN, 16, "ZOOM: %d/%d", zoom, MAX_ZOOM);
+    draw_text_formatted(5, SCREEN_HEIGHT - 25, BLACK, CYAN, 16, "ZOOM: %d/%d\n", zoom, MAX_ZOOM);
 }
 
 void tft_msg(TFT_eSPI& tft, const char* msg)
 {
     tft.fillRect(0, 0, tft.width(), 25, CYAN);
-    tft.setCursor(5,5,2);
+    tft.setCursor(5, 5, 2);
     tft.println(msg);
 }
 
 void header_msg(TFT_eSPI& tft, const char* msg)
 {
     tft.fillRect(0, 0, tft.width(), 25, YELLOWCLEAR);
-    tft.setCursor(5,5,2);
+    tft.setCursor(5, 5, 2);
     tft.print(msg);
 }
 
@@ -180,11 +186,11 @@ void draw(TFT_eSPI& tft, viewport_t& viewport, MemCache& memCache, int zoom_leve
 
     Polygon new_polygon;
     int16_t p1x, p1y, p2x, p2y;
-    uint32_t total_time = millis();
+    auto total_time = millis();
 
     for (auto mblock: memCache.blocks)
     {
-        uint32_t block_time = millis();
+        auto block_time = millis();
         if (!mblock->inView) continue;
 
         // Block to draw
@@ -242,11 +248,9 @@ void draw(TFT_eSPI& tft, viewport_t& viewport, MemCache& memCache, int zoom_leve
         log_d("Block lines done %i ms\n", millis()-block_time);
     }
 
-    log_d("Total %i ms\n", millis()-total_time);
-
     drawMe(tft, mode);
 
-    log_d("Draw done! %i\n", millis());
+    log_d("Total %i ms\n", millis()-total_time);
 }
 
 // void stats(ViewPort& viewPort, MapBlock& mblock)

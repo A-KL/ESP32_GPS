@@ -146,8 +146,7 @@ int main()
 	// auto start_time = std::chrono::high_resolution_clock::now();
 	setup();
 	// auto end_time = std::chrono::high_resolution_clock::now();
-	// auto time = end_time - start_time;
-	// std::cout << time / std::chrono::milliseconds(1) << "ms to run.\n";
+	// std::cout << (end_time - start_time) / std::chrono::milliseconds(1) << "ms to run.\n";
 
 	do {
 		SDL_Delay(10);
