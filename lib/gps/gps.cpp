@@ -1,8 +1,6 @@
 #include <math.h>
 #include <stdint.h>
 
-#include "../conf.h"
-
 #include "gps.h"
 
 #ifdef ARDUINO

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-#include <files.h>
+#include "file_stream.h"
 
 class NativeWriteStream : public IWriteStream {
     public:
@@ -87,10 +87,6 @@ class LocalFileStreamFactory : public IFileSystem {
     private:
         std::string _root;
 };
-
-bool init_file_system() {
-    return true;
-}
 
 IFileSystem* get_file_system(const char* root) {
     return new LocalFileStreamFactory(root);

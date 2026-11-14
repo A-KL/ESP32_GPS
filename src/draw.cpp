@@ -1,10 +1,9 @@
 #include <colors.h>
-
-#include <gps.h>
-#include <maps.h>
 #include <geometry.h>
+#include <maps.h>
+#include <gps.h>
 
-#include "../lib/conf.h"
+#include "conf.h"
 
 #include <TFT_eSPI.h>
 #include <TFT_eSPI_Ex.h>
@@ -129,13 +128,6 @@ void tft_msg(TFT_eSPI& tft, const char* msg)
     tft.println(msg);
 }
 
-void header_msg(TFT_eSPI& tft, const char* msg)
-{
-    tft.fillRect(0, 0, tft.width(), 25, YELLOWCLEAR);
-    tft.setCursor(5, 5, 2);
-    tft.print(msg);
-}
-
 inline int16_t toScreenCoord(const double screen_width, const int32_t pxy, const int32_t screen_center_xy, int zoom_level) // work with primitives for performance
 {
     return round((double)(pxy - screen_center_xy) / zoom_level) + screen_width / 2.0;
@@ -200,7 +192,7 @@ void draw(TFT_eSPI& tft, viewport_t& viewport, MemCache& memCache, int zoom_leve
         // Polygons 
         for (auto& polygon : mblock->polygons)
         {
-            if (zoom_level > polygon.maxzoom) continue;
+            if (zoom_level > polygon.max_zoom) continue;
             if (!polygon.bbox.intersects(screen_bbox_mc)) continue;
 
             new_polygon.color = polygon.color;

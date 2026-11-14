@@ -1,12 +1,12 @@
-#include <colors.h>
-#include <geometry.h>
-#include <gps.h>
-#include <files.h>
-#include <maps.h>
-#include "../lib/conf.h"
-#include "draw.h"
-
 #include <Arduino.h>
+#include <file_stream.h>
+#include <geometry.h>
+#include <maps.h>
+#include <gps.h>
+
+#include "colors.h"
+#include "conf.h"
+#include "draw.h"
 
 #ifdef ARDUINO
     #include "arduino_app.h"
@@ -40,7 +40,14 @@ void printFreeMem() {
     // log_i("Task watermark: %i\n", uxTaskGetStackHighWaterMark(NULL));
 }
 
-void gpioInit() {
+void gpioInit() 
+{
+    pinMode(PWR_EN_PIN, OUTPUT);
+    digitalWrite(PWR_EN_PIN, HIGH);
+
+    pinMode(PWR_ON_PIN, OUTPUT);
+    digitalWrite(PWR_ON_PIN, HIGH);
+
     // pinMode( UP_BUTTON, INPUT_PULLUP);
     // pinMode( DOWN_BUTTON, INPUT_PULLUP);
     // pinMode( LEFT_BUTTON, INPUT_PULLUP);
@@ -62,12 +69,6 @@ void tftfOff() {
 
 void setup()
 {
-    pinMode(PWR_EN_PIN, OUTPUT);
-    digitalWrite(PWR_EN_PIN, HIGH);
-
-    pinMode(PWR_ON_PIN, OUTPUT);
-    digitalWrite(PWR_ON_PIN, HIGH);
-
     gpioInit();
     tftfOff();
 
@@ -83,6 +84,7 @@ void setup()
     tft.setTextColor(BLACK);
     tft.setCursor(5,5,4);
     tft.println("Initializing...");
+
     tftOn();
 
     draw_init(tft);
@@ -93,7 +95,7 @@ void setup()
 
    // printFreeMem();
 
-    while (!init_file_system())
+    while (!fileSystem->Initialize())
     {
         tft.println("Error: SD Card Mount Failed!");
         log_e("Error: SD Card Mount Failed!");
@@ -102,7 +104,7 @@ void setup()
 
     tft.println("Reading map...");
     viewport.setCenter(map_center_point);
-    auto result = get_map_blocks(*fileSystem, viewport.bounding_box, memCache);
+    auto result = map::load_blocks(*fileSystem, viewport.bounding_box, memCache);
 
     if (!result) {
         tft.println("Error: Unable to read map!");
@@ -165,7 +167,7 @@ void loop()
 
     if (moved) {
         viewport.setCenter(p);
-        auto res = get_map_blocks(*fileSystem, viewport.bounding_box, memCache);
+        auto res = map::load_blocks(*fileSystem, viewport.bounding_box, memCache);
         draw(tft, viewport, memCache, zoom_level, mode);
         tft_header(tft, coord, mode);
         tft_footer(tft, zoom_level);

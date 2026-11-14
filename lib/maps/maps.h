@@ -1,8 +1,7 @@
 #pragma once
 
-#include <geometry.h>
 #include <vector>
-#include <math.h>
+#include <file_stream.h>
 
 #define MAPBLOCKS_MAX       6   // max blocks in memory
 #define MAPBLOCK_SIZE_BITS 12   // 4096 x 4096 coords (~meters) per block  
@@ -11,24 +10,6 @@
 const int32_t MAPBLOCK_MASK  = pow(2, MAPBLOCK_SIZE_BITS) - 1;     // ...00000000111111111111
 const int32_t MAPFOLDER_MASK = pow(2, MAPFOLDER_SIZE_BITS) - 1;    // ...00001111
 
-class IFileSystem;
-
-/// @brief Map square area of aprox 4096 meters side. Correspond to one single map file.
-struct MapBlock {
-    Point32 offset;
-    // BBox bbox;
-    bool inView = false;
-    std::vector<Polyline> polylines;
-    std::vector<Polygon> polygons;
+namespace map { 
+    bool load_blocks(const IFileSystem& fileSystem, const BBox& bbox, MemCache& memCache);
 };
-
-/// @brief MapBlocks stored in memory
-struct MemCache {
-    std::vector<MapBlock*> blocks;
-    // uint32_t total_polylines = 0;
-    // uint32_t total_polygons = 0;
-    // uint32_t total_inview_polylines = 0;
-    // uint32_t total_inview_polygons = 0;
-};
-
-bool get_map_blocks(const IFileSystem& fileSystem, const BBox& bbox, MemCache& memCache);

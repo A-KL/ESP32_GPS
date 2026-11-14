@@ -1,21 +1,16 @@
 #pragma once
 
-#include <math.h>
 #include <vector>
 #include <stdint.h>
 #include <stdlib.h>
 
 template<typename T>
-struct Point {
-
-    Point() : x(0), y(0)
+struct Point 
+{
+    Point(T x = 0, T y = 0) : x(x), y(y) 
     {};
 
-    Point(T x, T y) : x(x), y(y) 
-    {};
-
-    Point(char *coords_pair) // char array like:  11.222,333.44
-    {
+    Point(char *coords_pair) { // char array like:  11.222,333.44
         char *next;
         x = (T)round(strtod(coords_pair, &next));  // 1st coord // TODO: change by strtol and test
         y = (T)round(strtod(++next, NULL));        // 2nd coord
@@ -29,8 +24,7 @@ struct Point {
         return Point(x+p.x, y+p.y);
     };
 
-    inline bool operator==(const Point& p) const
-    {
+    inline bool operator==(const Point& p) const {
         return (x == p.x && y == p.y); 
     };
 
@@ -39,8 +33,7 @@ struct Point {
         return Point<T2>(x, y);
     };
 
-    T x;
-    T y;
+    T x, y;
 };
 
 /// @brief Point in 16 bits projected coordinates (x,y) 
@@ -108,7 +101,25 @@ struct Polygon {
     std::vector<Point16> points;
     BBox bbox;
     uint16_t color;
-    uint8_t maxzoom;
+    uint8_t max_zoom;
+};
+
+/// @brief Map square area of aprox 4096 meters side. Correspond to one single map file.
+struct MapBlock {
+    Point32 offset;
+    // BBox bbox;
+    bool inView = false;
+    std::vector<Polyline> polylines;
+    std::vector<Polygon> polygons;
+};
+
+/// @brief MapBlocks stored in memory
+struct MemCache {
+    std::vector<MapBlock*> blocks;
+    // uint32_t total_polylines = 0;
+    // uint32_t total_polygons = 0;
+    // uint32_t total_inview_polylines = 0;
+    // uint32_t total_inview_polygons = 0;
 };
 
 struct viewport_t 

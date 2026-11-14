@@ -9,52 +9,59 @@
 #include <string>
 #include <cstring>
 #include <stdexcept>
-#include <files.h>
+#include <file_stream.h>
 #include <geometry.h>
 
 #include "maps.h"
 
-// @brief Returns the int16 or 0 if empty
-int16_t read_int16(IReadStream* file)
+
+
+template <typename T = int16_t>
+bool read_int(IReadStream* file, T& result)
 {
-    char num[16];
-    uint8_t i;
-    char c;
-    i=0;
-    c = (char )file->read();
-    if( c == '\n') return 0;
-    while( c>='0' && c <= '9'){
+    char num[32] = {0};
+    uint8_t i = 0;
+
+    char c = (char) file->read();
+    if (c == '\n') {
+        log_e("read_int - end of line");
+        return false;
+    }
+
+    while (c>='0' && c <= '9') {
         assert( i < 15);
         num[i++] = c;
-        c = (char )file->read();
+        c = (char) file->read();
     }
+
     num[i] = '\0';
-    if( c != ';' && c != ',' && c != '\n'){
-        log_e("read_int16 - error: %c %i\n", c, c);
-        log_e("Num: [%s]", num);
-        return -1;
+
+    if (c != ';' && c != ',' && c != '\n'){
+        log_e("read_int - error: %c %i [%s]\n", c, c, num);
+        return false;
     }
-    try{
-        return std::stoi( num);
+
+    try
+    {
+        result = (T)std::stoi(num);
+        return true;
     } catch (std::invalid_argument) {
-        log_e("read_int16 - invalid_argument: [%c] [%s]\n", c, num);
+        log_e("read_int - invalid_argument: [%c] [%s]\n", c, num);
     } catch (std::out_of_range) {
-        log_e("read_int16 - out_of_range: [%c] [%s]\n", c, num);
+        log_e("read_int - out_of_range: [%c] [%s]\n", c, num);
     }
-    return -1;
+    return false;
 }
 
 // @brief Returns the string until terminator char or newline. The terminator character is not included but comsumed from stream.
 void read_str_until(IReadStream* file, char terminator, char *str)
 {
-    uint8_t i;
-    char c;
-    i=0;
-    c = (char )file->read();  
-    while( c != terminator && c != '\n'){
+    uint8_t i = 0;
+    char c = (char) file->read();  
+    while (c != terminator && c != '\n') {
         assert(i < 29);
         str[i++] = c;
-        c = (char )file->read();
+        c = (char) file->read();
     }
     str[i] = '\0';
 }
@@ -63,19 +70,21 @@ void read_coords(IReadStream* file, std::vector<Point16>& points)
 {
     assert(points.size() == 0);
 
-    char str[30];
+    char str[32] = {0};
     Point16 point;
 
     while(true)
     {
-       try {
+       try 
+       {
+            // X
             read_str_until(file, ',', str);
             if (str[0] == '\0') break;
             point.x = (int16_t) std::atol(str);
+            // Y
             read_str_until(file, ';', str);
             assert(str[0] != '\0');
             point.y = (int16_t)std::atol(str);
-           // log_d("x: %i, y: %s, ram: %i", point.x, str, esp_get_free_heap_size() / 1024);
             //log_d("point: %i %i", point.x, point.y);
         } catch(const std::invalid_argument &error){
             log_e("read_coords - invalid_argument: %s\n", str);
@@ -87,135 +96,147 @@ void read_coords(IReadStream* file, std::vector<Point16>& points)
     // points.shrink_to_fit();
 }
 
-bool read_map_block(IReadStream* file, MapBlock* result, int max_zoom = 7)
+bool read_polygons(IReadStream* file, std::vector<Polygon>& polygons, int max_zoom)
 {  
-    uint32_t line = 0;
-
-    char str[30]; 
-    //memset(str, 0, sizeof(str));
+    char str[64] = {0};
+    int16_t count = 0;
     
     read_str_until(file, ':', str);
+
     if (strcmp(str, "Polygons") != 0) {
         log_e("Map error. Expected Polygons instead of: %s\n", str);
         return false;
     }
 
-    auto count = read_int16(file);
-    if (count <= 0) {
+    if (!read_int(file, count)) {
         log_e("Error reading polygon count\n");
         return false;
     }
-
-    line++;
-    log_d("count: %i\n", count);
+    log_d("Polygons Count: %d\n", count);
 
     uint32_t total_points = 0;
     Polygon polygon;
-    Point16 p;
-    int16_t maxzoom;
+    // Point16 p;
     
-    while (count > 0) {
-        // log_d("line: %i", line);
-        read_str_until( file, '\n', str); // color
-        assert( str[0] == '0' && str[1] == 'x');
+    while (count > 0) 
+    {
+        read_str_until(file, '\n', str); // color
+        assert(str[0] == '0' && str[1] == 'x');
         polygon.color = (uint16_t)std::stoi(str, nullptr, 16);
         //log_d("polygon.color: %i\n", polygon.color);
-        line++;
-        read_str_until( file, '\n', str); // maxzoom
-        polygon.maxzoom = str[0] ? (uint8_t )std::stoi( str) : max_zoom;
+
+        read_str_until(file, '\n', str); // maxzoom
+        polygon.max_zoom = str[0] ? (uint8_t)std::stoi(str) : max_zoom;
         // log_d("polygon.maxzoom: %i", polygon.maxzoom);
-        line++;
 
-        read_str_until( file, ':', str);
-
+        read_str_until(file, ':', str);
         if (strcmp(str, "bbox") != 0){
-            log_e("bbox error tag. Line %i : %s\n", line, str);
+            log_e("bbox error tag. Line: %s\n", str);
             return false;
         }
 
-        polygon.bbox.min.x = read_int16( file);
-        polygon.bbox.min.y = read_int16( file);
-        polygon.bbox.max.x = read_int16( file);
-        polygon.bbox.max.y = read_int16( file);
-
-        line++;
+        assert(read_int<int32_t>(file, polygon.bbox.min.x));
+        assert(read_int<int32_t>(file, polygon.bbox.min.y));
+        assert(read_int<int32_t>(file, polygon.bbox.max.x));
+        assert(read_int<int32_t>(file, polygon.bbox.max.y));
 
         polygon.points.clear();
-        read_str_until( file, ':', str);
+
+        read_str_until(file, ':', str);
         if (strcmp( str, "coords") != 0){
-            log_e("coords error tag. Line %i : %s\n", line, str);
+            log_e("coords error tag. Line: %s\n", str);
             return false;
         }
         read_coords(file, polygon.points);
-        line++;
-        result->polygons.push_back(polygon);
+        polygons.push_back(polygon);
         total_points += polygon.points.size();
         count--;
     }
-    assert(count == 0);
+    assert (count == 0);
     
-    // read lines
+    log_d("Polygons points: %d\n", total_points);
+
+    return true;
+}
+
+bool read_polylines(IReadStream* file, std::vector<Polyline>& polylines, int max_zoom)
+{  
+    char str[64] = {0};
+    int16_t count = 0;
+    
     read_str_until(file, ':', str);
 
-    if (strcmp(str, "Polylines") != 0) 
+    if (strcmp(str, "Polylines") != 0) { 
         log_e("Map error. Expected Polylines instead of: %s\n", str);
+        return false;
+    }
 
-    count = read_int16(file);
-    assert( count > 0);
-    line++;
-    log_d("count: %i", count);
+    if (!read_int(file, count)) {
+        log_e("Error reading polyline count\n");
+        return false;
+    }
+    log_d("Polylines Count: %d\n", count);
     
     Polyline polyline;
+    uint32_t total_points = 0;
 
     while (count > 0) 
     {
         read_str_until(file, '\n', str); // color
         assert(str[0] == '0' && str[1] == 'x');
         polyline.color = (uint16_t)std::stoul( str, nullptr, 16);
-        line++;
 
         read_str_until( file, '\n', str); // width
         polyline.width = str[0] ? (uint8_t)std::stoi( str) : 1;
-        line++;
 
         read_str_until( file, '\n', str); // maxzoom
         polyline.maxzoom = str[0] ? (uint8_t)std::stoi( str) : max_zoom;
-        line++;
 
         read_str_until( file, ':', str);
 
         if (strcmp(str, "bbox") != 0){
-            log_e("bbox error tag. Line %i : %s\n", line, str);
+            log_e("bbox error tag. Line: %s\n", str);
             return false;
         }
 
-        polyline.bbox.min.x = read_int16(file);
-        polyline.bbox.min.y = read_int16(file);
-        polyline.bbox.max.x = read_int16(file);
-        polyline.bbox.max.y = read_int16(file);
+        assert(read_int<int32_t>(file, polyline.bbox.min.x));
+        assert(read_int<int32_t>(file, polyline.bbox.min.y));
+        assert(read_int<int32_t>(file, polyline.bbox.max.x));
+        assert(read_int<int32_t>(file, polyline.bbox.max.y));
 
         // if( line > 4050){
         //     log_e("polyline.bbox %i %i %i %i", polyline.bbox.min.x, polyline.bbox.min.y,polyline.bbox.max.x, polyline.bbox.max.y);
         // }
-        line++;
 
         polyline.points.clear();
         read_str_until(file, ':', str);
         if( strcmp( str, "coords") != 0){
-            log_d("coords tag. Line %i : %s\n", line, str);
+            log_d("coords tag. Line: %s\n", str);
             return false;
         }
 
         read_coords(file, polyline.points);
-        line++;
-        result->polylines.push_back(polyline);
+        polylines.push_back(polyline);
         total_points += polyline.points.size();
         count--;
     }
-    return (count == 0);
+    assert (count == 0);
+    
+    log_d("Polygons points: %d\n", total_points);
+
+    return true;
 }
 
-bool get_map_blocks(const IFileSystem& fileSystem, const BBox& bbox, MemCache& memCache)
+bool read_map_block(IReadStream* file, MapBlock* result, int max_zoom = 7)
+{  
+    return 
+        read_polygons(file, result->polygons, max_zoom) && 
+        read_polylines(file, result->polylines, max_zoom);
+}
+
+namespace map {
+
+bool load_blocks(const IFileSystem& fileSystem, const BBox& bbox, MemCache& memCache)
 {
     static auto elapsed = millis();
 
@@ -324,4 +345,6 @@ bool get_map_blocks(const IFileSystem& fileSystem, const BBox& bbox, MemCache& m
     log_d("get_map_blocks %i\n", millis()- elapsed);
 
     return true;
+}
+
 }

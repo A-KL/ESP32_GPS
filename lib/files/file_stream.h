@@ -18,8 +18,9 @@ class IFileSystem {
     public:
         virtual IReadStream* OpenRead(const char* fileName) const = 0;
         virtual IWriteStream* OpenWrite(const char* fileName) const = 0;
-};
 
-bool init_file_system();
+        virtual bool Initialize() { return true; }
+        virtual ~IFileSystem() {};
+};
 
 IFileSystem* get_file_system(const char* root = (const char*)0);

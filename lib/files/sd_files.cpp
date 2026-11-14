@@ -6,7 +6,7 @@
 #include "FS.h"
 #include "SPI.h"
 
-#include "files.h"
+#include "file_stream.h"
 
 #ifdef SD_CS_PIN
 #include "SD.h"
