@@ -5,6 +5,7 @@
     #include <cassert>
 #endif
 
+#include <vector>
 #include <stdio.h>
 #include <string>
 #include <cstring>
@@ -14,7 +15,12 @@
 
 #include "maps.h"
 
+#define MAPBLOCKS_MAX       6   // max blocks in memory
+#define MAPBLOCK_SIZE_BITS 12   // 4096 x 4096 coords (~meters) per block  
+#define MAPFOLDER_SIZE_BITS 4   // 16 x 16 map blocks per folder
 
+const int32_t MAPBLOCK_MASK  = pow(2, MAPBLOCK_SIZE_BITS) - 1;     // ...00000000111111111111
+const int32_t MAPFOLDER_MASK = pow(2, MAPFOLDER_SIZE_BITS) - 1;    // ...00001111
 
 template <typename T = int16_t>
 bool read_int(IReadStream* file, T& result)
@@ -182,15 +188,15 @@ bool read_polylines(IReadStream* file, std::vector<Polyline>& polylines, int max
 
     while (count > 0) 
     {
-        read_str_until(file, '\n', str); // color
+        read_str_until(file, '\n', str);
         assert(str[0] == '0' && str[1] == 'x');
-        polyline.color = (uint16_t)std::stoul( str, nullptr, 16);
+        polyline.color = (uint16_t)std::stoul(str, nullptr, 16);
 
-        read_str_until( file, '\n', str); // width
-        polyline.width = str[0] ? (uint8_t)std::stoi( str) : 1;
+        read_str_until( file, '\n', str);
+        polyline.width = str[0] ? (uint8_t)std::stoi(str) : 1;
 
-        read_str_until( file, '\n', str); // maxzoom
-        polyline.maxzoom = str[0] ? (uint8_t)std::stoi( str) : max_zoom;
+        read_str_until( file, '\n', str);
+        polyline.max_zoom = str[0] ? (uint8_t)std::stoi(str) : max_zoom;
 
         read_str_until( file, ':', str);
 
@@ -204,13 +210,10 @@ bool read_polylines(IReadStream* file, std::vector<Polyline>& polylines, int max
         assert(read_int<int32_t>(file, polyline.bbox.max.x));
         assert(read_int<int32_t>(file, polyline.bbox.max.y));
 
-        // if( line > 4050){
-        //     log_e("polyline.bbox %i %i %i %i", polyline.bbox.min.x, polyline.bbox.min.y,polyline.bbox.max.x, polyline.bbox.max.y);
-        // }
-
         polyline.points.clear();
+
         read_str_until(file, ':', str);
-        if( strcmp( str, "coords") != 0){
+        if (strcmp( str, "coords") != 0){
             log_d("coords tag. Line: %s\n", str);
             return false;
         }
@@ -221,7 +224,6 @@ bool read_polylines(IReadStream* file, std::vector<Polyline>& polylines, int max
         count--;
     }
     assert (count == 0);
-    
     log_d("Polygons points: %d\n", total_points);
 
     return true;
@@ -238,21 +240,21 @@ namespace map {
 
 bool load_blocks(const IFileSystem& fileSystem, const BBox& bbox, MemCache& memCache)
 {
-    static auto elapsed = millis();
+    static auto start = millis();
 
     for (auto block : memCache.blocks){
         block->inView = false;
     }
 
     // loop the 4 corners of the bbox and find the files that contain them
-    for (Point32 point : { bbox.min, bbox.max, Point32(bbox.min.x, bbox.max.y), Point32( bbox.max.x, bbox.min.y) })
+    for (const auto& point : { bbox.min, bbox.max, Point32(bbox.min.x, bbox.max.y), Point32( bbox.max.x, bbox.min.y) })
     {
         bool found = false;
-        int32_t block_min_x = point.x & ( ~MAPBLOCK_MASK);
-        int32_t block_min_y = point.y & ( ~MAPBLOCK_MASK);
+        int32_t block_min_x = point.x & (~MAPBLOCK_MASK);
+        int32_t block_min_y = point.y & (~MAPBLOCK_MASK);
         
         // check if the needed block is already in memory
-        for (auto memblock : memCache.blocks){
+        for (auto memblock : memCache.blocks) {
             if( block_min_x == memblock->offset.x && block_min_y == memblock->offset.y){
                 memblock->inView = true;
                 found = true;
@@ -260,8 +262,7 @@ bool load_blocks(const IFileSystem& fileSystem, const BBox& bbox, MemCache& memC
             }
         }
 
-        if (found) 
-        {
+        if (found) {
             continue;
         }
         
@@ -272,8 +273,7 @@ bool load_blocks(const IFileSystem& fileSystem, const BBox& bbox, MemCache& memC
         int32_t folder_name_x = block_min_x >> (MAPFOLDER_SIZE_BITS + MAPBLOCK_SIZE_BITS);
         int32_t folder_name_y = block_min_y >> (MAPFOLDER_SIZE_BITS + MAPBLOCK_SIZE_BITS);
 
-        static char file_name[100];
-        memset(file_name, 0, sizeof(file_name));
+        char file_name[128] = {0};
         snprintf(file_name, sizeof(file_name), "%+04d%+04d/%d_%d.fmp", folder_name_x, folder_name_y, block_x, block_y);
         log_i("Reading file: '%s'\n", file_name);
 
@@ -284,44 +284,19 @@ bool load_blocks(const IFileSystem& fileSystem, const BBox& bbox, MemCache& memC
             log_d("Deleteing freeHeap: %i\n", esp_get_free_heap_size());
 
             auto first_block = memCache.blocks.front();
-            delete first_block; // free memory
+            delete first_block;
             memCache.blocks.erase(memCache.blocks.begin()); // remove pointer from the vector
             
             log_d("Deleted freeHeap: %i\n", esp_get_free_heap_size());
         }
 
-        // TEMP
-        // auto stream = fileSystem.OpenRead(file_name);
-        // auto out_stream = fileSystem.OpenWrite("test.tmp");
-
-        // if (!stream) {
-        //     log_e("Map file not found: %s\n", file_name);
-        //     return false;
-        // }
-
-        // log_e("Map file not found: %s\n", file_name);
-
-        // while (true) {
-        //     auto val = stream->read();
-        //     if(val<0) {
-        //         break;
-        //     }
-        //     out_stream->write(val);
-        // }
-
-        //  delete out_stream;
-        //  delete stream;
-        // return false;
-        // TEMP
-
-        auto new_block = new MapBlock();
-        
         auto stream = fileSystem.OpenRead(file_name);
         if (!stream) {
             log_e("Map file not found: %s\n", file_name);
-            delete new_block;
             return false;
         }
+
+        auto new_block = new MapBlock();
 
         if (!read_map_block(stream, new_block)) {
             delete stream;
@@ -333,7 +308,7 @@ bool load_blocks(const IFileSystem& fileSystem, const BBox& bbox, MemCache& memC
 
         new_block->inView = true;
         new_block->offset = Point32(block_min_x, block_min_y);
-        memCache.blocks.push_back(new_block); // add the block to the memory cache
+        memCache.blocks.push_back(new_block);
 
         assert(memCache.blocks.size() <= MAPBLOCKS_MAX);
 
@@ -342,7 +317,7 @@ bool load_blocks(const IFileSystem& fileSystem, const BBox& bbox, MemCache& memC
     }   
 
     log_d("memCache size: %i\n", memCache.blocks.size());
-    log_d("get_map_blocks %i\n", millis()- elapsed);
+    log_d("get_map_blocks %i\n", millis()-start);
 
     return true;
 }

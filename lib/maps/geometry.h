@@ -45,41 +45,40 @@ typedef Point<int32_t> Point32;
 // @brief Bounding Box
 struct BBox {
     BBox() 
-    {};
+    {}
 
     // @brief Bounding Box
     // @param min top left corner
     // @param max bottom right corner
-    BBox(Point32 min, Point32 max)
-    : min(min), max(max)
-    {};
+    BBox(Point32 min, Point32 max) : min(min), max(max)
+    {}
 
-    BBox operator-(const Point32& point)
-    { 
+    BBox operator-(const Point32& point) const { 
         return BBox(min-point, max-point);
     };
 
-    inline bool containsPoint(const Point32& p)
-    { 
+    inline bool containsPoint(const Point32& p) const { 
         return p.x >= min.x && p.x <= max.x && p.y >= min.y && p.y <= max.y; 
     }
 
-    inline bool intersects(const BBox& b) const
-    { 
+    inline bool containsPoint(const Point16& p) const { 
+        return p.x >= min.x && p.x <= max.x && p.y >= min.y && p.y <= max.y; 
+    }
+
+    inline bool intersects(const BBox& b) const { 
         return !(b.min.x > max.x || b.max.x < min.x || b.min.y > max.y || b.max.y < min.y);
     }
 
-    Point32 min;
-    Point32 max;
+    Point32 min, max;
 };
 
 // @brief Simple two points line 
 struct Line {
     Line() 
-    {};
+    {}
 
     Line(Point16 p1, Point16 p2) : p1(p1), p2(p2) 
-    {};
+    {}
 
     Point16 p1;
     Point16 p2;
@@ -93,7 +92,7 @@ struct Polyline {
     BBox bbox;
     uint16_t color;
     uint8_t width;
-    uint8_t maxzoom;
+    uint8_t max_zoom;
 };
 
 // @brief Polygon feature 
@@ -120,28 +119,4 @@ struct MemCache {
     // uint32_t total_polygons = 0;
     // uint32_t total_inview_polylines = 0;
     // uint32_t total_inview_polygons = 0;
-};
-
-struct viewport_t 
-{
-    viewport_t(const Point32& location, const uint16_t zoom, const uint16_t w, const uint16_t h) 
-        : screen_width(w), screen_height(h), zoom_level(zoom)
-    {
-        setCenter(location);
-    }
-
-    void setCenter(const Point32& location) {
-        center = location;
-        bounding_box.min.x = location.x - screen_width  * zoom_level / 2;
-        bounding_box.min.y = location.y - screen_height * zoom_level / 2;
-        bounding_box.max.x = location.x + screen_width  * zoom_level / 2;
-        bounding_box.max.y = location.y + screen_height * zoom_level / 2;
-    }
-   
-    uint16_t screen_width;
-    uint16_t screen_height;
-    uint16_t zoom_level;
-
-    Point32 center;
-    BBox bounding_box;
 };

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <file_stream.h>
 #include <geometry.h>
+#include <viewport.h>
 #include <maps.h>
 #include <gps.h>
 
